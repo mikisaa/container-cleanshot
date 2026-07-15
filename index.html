@@ -197,8 +197,8 @@
 
     /* Camera Viewport Area */
     .camera-viewport-container {
-      flex-grow: 1;
       width: 100%;
+      aspect-ratio: 3 / 4;
       background-color: #000;
       border-radius: var(--radius-lg);
       overflow: hidden;
@@ -208,19 +208,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: 0 auto;
+      flex-grow: 0;
+      max-height: calc(100vh - 250px);
     }
 
     #camera-stream,
-    .photo-preview {
+    .photo-preview,
+    .guide-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
+    .guide-overlay {
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.35;
+      transition: opacity 0.3s ease;
+    }
+
     .photo-preview {
-      position: absolute;
-      top: 0;
-      left: 0;
       z-index: 2;
       animation: preview-fade-in 0.25s ease-out;
     }
@@ -328,18 +339,46 @@
       transform: translateX(4px);
     }
 
-    /* Camera screen specific controls */
-    .camera-controls {
-      padding: 16px 0;
+    /* Header top row for navigation */
+    .header-top-row {
       display: flex;
-      flex-direction: column;
-      gap: 16px;
-      flex-shrink: 0;
+      justify-content: flex-start;
+      margin-bottom: 12px;
+      width: 100%;
     }
 
-    .controls-top {
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-home:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .home-icon {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Camera screen specific controls */
+    .camera-controls {
+      padding: 8px 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     .controls-main {
@@ -347,15 +386,15 @@
       justify-content: center;
       align-items: center;
       position: relative;
-      min-height: 84px;
+      min-height: 72px;
     }
 
     .btn-circle {
-      width: 76px;
-      height: 76px;
+      width: 68px;
+      height: 68px;
       border-radius: var(--radius-circle);
       background: white;
-      padding: 6px;
+      padding: 5px;
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
       z-index: 5;
     }
@@ -385,10 +424,17 @@
     .retake-next-group .btn {
       pointer-events: auto;
       width: 45%;
-      padding: 14px 20px;
-      font-size: 1rem;
+      padding: 12px 18px;
+      font-size: 0.95rem;
       box-shadow: var(--shadow-lg);
       animation: control-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Upload Specific Styles */
+    .upload-spinner-container {
+      background-color: rgba(99, 102, 241, 0.1) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      color: var(--accent-color) !important;
     }
 
     /* Checklist custom styling */
@@ -669,6 +715,15 @@
     <!-- 2. 撮影画面 -->
     <div id="camera-screen" class="screen">
       <div class="screen-header">
+        <div class="header-top-row">
+          <button id="btn-home-camera" class="btn-home" title="最初に戻る">
+            <svg class="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            最初に戻る
+          </button>
+        </div>
         <div class="progress-container">
           <div class="progress-bar-bg">
             <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
@@ -684,154 +739,10 @@
         <!-- 撮影後のプレビュー用画像（初期非表示） -->
         <img id="photo-preview" class="photo-preview" src="" alt="プレビュー" style="display: none;">
 
-        <!-- 透過オーバーレイガイド (overlay.html の内容をインライン化) -->
+        <!-- 透過オーバーレイガイド (PNG画像へ差し替え) -->
         <div id="overlay-container">
-
-          <!-- WIDE (全体広角撮影用) -->
-          <svg class="guide-overlay" id="guide-WIDE" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <rect x="5" y="5" width="90" height="90" rx="3" fill="none" stroke="white" stroke-width="2"
-              stroke-dasharray="4 4" opacity="0.6" />
-            <circle cx="50" cy="50" r="4" fill="white" opacity="0.5" />
-            <line x1="50" y1="40" x2="50" y2="60" stroke="white" stroke-width="1.5" opacity="0.5" />
-            <line x1="40" y1="50" x2="60" y2="50" stroke="white" stroke-width="1.5" opacity="0.5" />
-          </svg>
-
-          <!-- BOX (コンテナNo.用) -->
-          <svg class="guide-overlay" id="guide-BOX" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <rect x="55" y="20" width="35" height="60" rx="4" fill="none" stroke="yellow" stroke-width="2.5"
-              opacity="0.75" />
-            <text x="72.5" y="15" fill="yellow" font-size="5" font-weight="bold" text-anchor="middle"
-              opacity="0.8">コンテナNo.</text>
-            <line x1="30" y1="50" x2="40" y2="50" stroke="white" stroke-width="1" opacity="0.4" />
-            <line x1="35" y1="45" x2="35" y2="55" stroke="white" stroke-width="1" opacity="0.4" />
-          </svg>
-
-          <!-- BACK (コンテナ奥の壁) -->
-          <svg class="guide-overlay" id="guide-BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="2.5" opacity="0.75" />
-            <line x1="0" y1="0" x2="35" y2="35" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
-              opacity="0.4" />
-            <line x1="100" y1="0" x2="65" y2="35" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
-              opacity="0.4" />
-            <line x1="0" y1="100" x2="35" y2="65" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
-              opacity="0.4" />
-            <line x1="100" y1="100" x2="65" y2="65" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
-              opacity="0.4" />
-            <text x="50" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.8">奥の壁面をここに合わせる</text>
-          </svg>
-
-          <!-- LEFT_BACK (壁面左奥) -->
-          <svg class="guide-overlay" id="guide-LEFT_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="10,30 35,35 35,65 10,70" fill="rgba(99, 102, 241, 0.1)" stroke="#6366f1" stroke-width="2.5"
-              opacity="0.8" />
-            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
-              stroke-dasharray="2 2" opacity="0.3" />
-            <text x="22.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.9">左側奥の壁</text>
-          </svg>
-
-          <!-- LEFT_FRONT (壁面左手前) -->
-          <svg class="guide-overlay" id="guide-LEFT_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="5,15 40,30 40,70 5,85" fill="rgba(99, 102, 241, 0.15)" stroke="#6366f1" stroke-width="2.5"
-              opacity="0.8" />
-            <text x="22.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.9">左側手前の壁</text>
-          </svg>
-
-          <!-- RIGHT_BACK (壁面右奥) -->
-          <svg class="guide-overlay" id="guide-RIGHT_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="65,35 90,30 90,70 65,65" fill="rgba(99, 102, 241, 0.1)" stroke="#6366f1" stroke-width="2.5"
-              opacity="0.8" />
-            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
-              stroke-dasharray="2 2" opacity="0.3" />
-            <text x="77.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.9">右側奥の壁</text>
-          </svg>
-
-          <!-- RIGHT_FRONT (壁面右手前) -->
-          <svg class="guide-overlay" id="guide-RIGHT_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="60,30 95,15 95,85 60,70" fill="rgba(99, 102, 241, 0.15)" stroke="#6366f1"
-              stroke-width="2.5" opacity="0.8" />
-            <text x="77.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.9">右側手前の壁</text>
-          </svg>
-
-          <!-- CEILING_BACK (天井奥) -->
-          <svg class="guide-overlay" id="guide-CEILING_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="30,10 70,10 65,35 35,35" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b" stroke-width="2.5"
-              opacity="0.8" />
-            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
-              stroke-dasharray="2 2" opacity="0.3" />
-            <text x="50" y="22" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.9">天井の奥側</text>
-          </svg>
-
-          <!-- CEILING_FRONT (天井手前) -->
-          <svg class="guide-overlay" id="guide-CEILING_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="10,5 90,5 60,30 40,30" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="2.5"
-              opacity="0.8" />
-            <text x="50" y="18" fill="white" font-size="4" font-weight="bold" text-anchor="middle" opacity="0.9">天井の手前側
-              (結露確認)</text>
-          </svg>
-
-          <!-- FLOOR_BACK (床奥) -->
-          <svg class="guide-overlay" id="guide-FLOOR_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="35,65 65,65 70,90 30,90" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" stroke-width="2.5"
-              opacity="0.8" />
-            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
-              stroke-dasharray="2 2" opacity="0.3" />
-            <text x="50" y="80" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.9">床の奥側</text>
-          </svg>
-
-          <!-- FLOOR_FRONT (床手前) -->
-          <svg class="guide-overlay" id="guide-FLOOR_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="40,70 60,70 90,95 10,95" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981"
-              stroke-width="2.5" opacity="0.8" />
-            <text x="50" y="86" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
-              opacity="0.9">床の手前側</text>
-          </svg>
-
+          <img id="camera-guide" class="guide-overlay" src="" alt="ガイド">
         </div>
-
-        <style>
-          #overlay-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 3;
-            pointer-events: none;
-          }
-
-          .guide-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            animation: overlay-fade 0.3s ease-out;
-          }
-
-          .guide-overlay.active {
-            display: block;
-          }
-
-          @keyframes overlay-fade {
-            from {
-              opacity: 0;
-              transform: scale(1.02);
-            }
-
-            to {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-        </style>
 
         <!-- ローディングスピナー -->
         <div id="loading-overlay" class="loading-overlay">
@@ -841,9 +752,6 @@
       </div>
 
       <div class="camera-controls">
-        <div class="controls-top">
-          <button id="btn-toggle-guide" class="btn btn-secondary btn-sm active">ガイド: ON</button>
-        </div>
         <div class="controls-main">
           <!-- 撮影用丸ボタン -->
           <button id="btn-capture" class="btn btn-primary btn-circle" title="撮影">
@@ -861,6 +769,15 @@
     <!-- 3. 清掃チェックリスト画面 -->
     <div id="checklist-screen" class="screen">
       <div class="screen-header">
+        <div class="header-top-row">
+          <button id="btn-home-checklist" class="btn-home" title="最初に戻る">
+            <svg class="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            最初に戻る
+          </button>
+        </div>
         <h2 class="section-title">清掃確認</h2>
         <p class="section-subtitle">以下の項目をすべて確認し、チェックを入れてください。</p>
       </div>
@@ -898,7 +815,33 @@
       </div>
     </div>
 
-    <!-- 4. 完了画面 -->
+    <!-- 4. 一括送信画面 -->
+    <div id="upload-screen" class="screen">
+      <div class="success-section">
+        <div class="success-icon-container upload-spinner-container">
+          <div class="spinner"></div>
+        </div>
+        <h1 class="app-title">データを送信中</h1>
+        <p class="app-subtitle" id="upload-status-text">端末に保存されたデータを送信しています...</p>
+      </div>
+
+      <div class="job-summary-card">
+        <div class="progress-container" style="margin-bottom: 0;">
+          <div class="progress-bar-bg">
+            <div id="upload-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+          <div id="upload-progress-text" class="progress-text" style="margin-top: 8px;">送信中: 0 / 12 枚</div>
+        </div>
+        <div id="upload-error-container" style="display: none; text-align: center; margin-top: 16px;">
+          <p class="text-danger" id="upload-error-message">送信中にエラーが発生しました。</p>
+          <button id="btn-retry-upload" class="btn btn-primary" style="margin-top: 16px; width: 100%;">
+            再試行する
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 完了画面 -->
     <div id="complete-screen" class="screen">
       <div class="success-section">
         <div class="success-icon-container">
@@ -993,10 +936,26 @@
     const state = {
       jobId: null,             // 現在の作業ID
       currentStepIndex: 0,     // 現在の進行ステップ (0〜11)
-      isGuideOn: true,         // 透過ガイドの表示ON/OFF状態
       shotsList: [],           // 撮影項目定義リスト (マスタから読み込み)
       mediaStream: null,       // カメラのストリーム情報
-      currentBase64Image: null // 撮影した画像の一時保存用 (Base64文字列)
+      currentBase64Image: null, // 撮影した画像の一時保存用 (Base64文字列)
+      checklistData: null      // 清掃チェックリストの一時保存用
+    };
+
+    // 各撮影キー（ShotKey）に対応するガイド画像（PNGファイル）の相対パス定義
+    const overlayImageMap = {
+      'CONTAINER_NO': 'コンテナ画像/10_コンテナNo.png',
+      'BEFORE_FULL': 'コンテナ画像/11_清掃前_コンテナ全体.png',
+      'BACK_WALL': 'コンテナ画像/01_コンテナ奥の壁.png',
+      'LEFT_BACK': 'コンテナ画像/02_左壁面_奥半分.png',
+      'RIGHT_BACK': 'コンテナ画像/03_右壁面_奥半分.png',
+      'CEILING_BACK': 'コンテナ画像/04_天井_奥.png',
+      'FLOOR_BACK': 'コンテナ画像/05_床_奥.png',
+      'LEFT_FRONT': 'コンテナ画像/06_左壁面_手前半分.png',
+      'RIGHT_FRONT': 'コンテナ画像/07_右壁面_手前半分.png',
+      'CEILING_FRONT': 'コンテナ画像/08_天井_手前.png',
+      'FLOOR_FRONT': 'コンテナ画像/09_床_手前.png',
+      'AFTER_FULL': 'コンテナ画像/12_清掃後_コンテナ全体.png'
     };
 
     // 画面内のHTML要素への参照一覧
@@ -1005,15 +964,18 @@
       startScreen: document.getElementById('start-screen'),
       cameraScreen: document.getElementById('camera-screen'),
       checklistScreen: document.getElementById('checklist-screen'),
+      uploadScreen: document.getElementById('upload-screen'),
       completeScreen: document.getElementById('complete-screen'),
 
       // ボタン要素
       btnStart: document.getElementById('btn-start'),
-      btnToggleGuide: document.getElementById('btn-toggle-guide'),
+      btnHomeCamera: document.getElementById('btn-home-camera'),
+      btnHomeChecklist: document.getElementById('btn-home-checklist'),
       btnCapture: document.getElementById('btn-capture'),
       btnRetake: document.getElementById('btn-retake'),
       btnNextShot: document.getElementById('btn-next-shot'),
       btnSubmitChecklist: document.getElementById('btn-submit-checklist'),
+      btnRetryUpload: document.getElementById('btn-retry-upload'),
       btnFinish: document.getElementById('btn-finish'),
 
       // 動的表示領域
@@ -1022,27 +984,122 @@
       shotTitle: document.getElementById('shot-title'),
       cameraStream: document.getElementById('camera-stream'),
       photoPreview: document.getElementById('photo-preview'),
+      cameraGuide: document.getElementById('camera-guide'),
       loadingOverlay: document.getElementById('loading-overlay'),
       loadingMessage: document.getElementById('loading-message'),
       summaryJobId: document.getElementById('summary-job-id'),
+
+      // アップロード画面用表示領域
+      uploadProgressBar: document.getElementById('upload-progress-bar'),
+      uploadProgressText: document.getElementById('upload-progress-text'),
+      uploadStatusText: document.getElementById('upload-status-text'),
+      uploadErrorContainer: document.getElementById('upload-error-container'),
+      uploadErrorMessage: document.getElementById('upload-error-message'),
 
       // チェック項目
       chkItems: document.querySelectorAll('.chk-item')
     };
 
+    // ----------------------------------------------------
+    // ★IndexedDB (端末一時保存) 制御ロジック★
+    // ----------------------------------------------------
+    const dbName = "ContainerCleanShotDB";
+    const storeName = "photos";
+
+    function initDb() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 1);
+        request.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(storeName)) {
+            db.createObjectStore(storeName);
+          }
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    async function localSavePhoto(key, data) {
+      const db = await initDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        store.put(data, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = (e) => reject(tx.error);
+      });
+    }
+
+    async function localGetPhoto(key) {
+      const db = await initDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        const request = store.get(key);
+        tx.oncomplete = () => resolve(request.result);
+        tx.onerror = (e) => reject(tx.error);
+      });
+    }
+
+    async function localGetAllPhotos() {
+      const db = await initDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        const photos = {};
+        const request = store.openCursor();
+        request.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor) {
+            photos[cursor.key] = cursor.value;
+            cursor.continue();
+          } else {
+            resolve(photos);
+          }
+        };
+        request.onerror = (e) => reject(tx.error);
+      });
+    }
+
+    async function localDeletePhoto(key) {
+      const db = await initDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        store.delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = (e) => reject(tx.error);
+      });
+    }
+
+    async function localClearDb() {
+      const db = await initDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        store.clear();
+        tx.oncomplete = () => resolve();
+        tx.onerror = (e) => reject(tx.error);
+      });
+    }
+
     // アプリ起動時の初期化処理
     document.addEventListener('DOMContentLoaded', () => {
       setupEventListeners();
+      checkUnsentDataOnStartup();
     });
 
     // イベントリスナーの設定
     function setupEventListeners() {
       elements.btnStart.addEventListener('click', handleStartJob);
-      elements.btnToggleGuide.addEventListener('click', handleToggleGuide);
+      elements.btnHomeCamera.addEventListener('click', handleHomeNavigation);
+      elements.btnHomeChecklist.addEventListener('click', handleHomeNavigation);
       elements.btnCapture.addEventListener('click', handleCapture);
       elements.btnRetake.addEventListener('click', handleRetake);
       elements.btnNextShot.addEventListener('click', handleNextShot);
       elements.btnSubmitChecklist.addEventListener('click', handleSubmitChecklist);
+      elements.btnRetryUpload.addEventListener('click', handleRetryUpload);
       elements.btnFinish.addEventListener('click', handleFinish);
 
       elements.chkItems.forEach(chk => {
@@ -1054,10 +1111,33 @@
      * 画面切り替えの処理
      */
     function showScreen(activeScreen) {
-      [elements.startScreen, elements.cameraScreen, elements.checklistScreen, elements.completeScreen].forEach(screen => {
+      [elements.startScreen, elements.cameraScreen, elements.checklistScreen, elements.uploadScreen, elements.completeScreen].forEach(screen => {
         screen.classList.remove('active');
       });
       activeScreen.classList.add('active');
+    }
+
+    /**
+     * 途中で最初から（ホーム）に戻るアクション
+     */
+    async function handleHomeNavigation() {
+      const confirmed = confirm("本当に最初の画面に戻りますか？\n現在撮影されたデータやチェックリストはすべて消去されます。");
+      if (confirmed) {
+        stopCamera();
+        toggleLoading(true, "リセット中...");
+        try {
+          await localClearDb();
+        } catch (err) {
+          console.error("DBクリアに失敗: ", err);
+        }
+        toggleLoading(false);
+        state.jobId = null;
+        state.currentStepIndex = 0;
+        state.shotsList = [];
+        state.currentBase64Image = null;
+        state.checklistData = null;
+        showScreen(elements.startScreen);
+      }
     }
 
     /**
@@ -1144,32 +1224,18 @@
     }
 
     /**
-     * 透過ガイドの表示ON/OFFボタンクリック時の処理
-     */
-    function handleToggleGuide() {
-      state.isGuideOn = !state.isGuideOn;
-      if (state.isGuideOn) {
-        elements.btnToggleGuide.classList.add('active');
-        elements.btnToggleGuide.textContent = 'ガイド: ON';
-      } else {
-        elements.btnToggleGuide.classList.remove('active');
-        elements.btnToggleGuide.textContent = 'ガイド: OFF';
-      }
-      updateGuideDisplay();
-    }
-
-    /**
-     * ガイドの表示切替処理
+     * ガイドの表示切替処理 (PNG画像を重ねる)
      */
     function updateGuideDisplay() {
-      const guides = document.querySelectorAll('.guide-overlay');
-      guides.forEach(g => g.classList.remove('active'));
-
-      if (state.isGuideOn && state.shotsList[state.currentStepIndex]) {
+      if (state.shotsList[state.currentStepIndex]) {
         const currentStep = state.shotsList[state.currentStepIndex];
-        const targetGuide = document.getElementById(`guide-${currentStep.OverlayType}`);
-        if (targetGuide) {
-          targetGuide.classList.add('active');
+        const imagePath = overlayImageMap[currentStep.ShotKey];
+        if (imagePath) {
+          elements.cameraGuide.src = imagePath;
+          elements.cameraGuide.style.display = 'block';
+        } else {
+          elements.cameraGuide.src = '';
+          elements.cameraGuide.style.display = 'none';
         }
       }
     }
@@ -1241,7 +1307,7 @@
       const video = elements.cameraStream;
       const canvas = document.createElement('canvas');
 
-      // 品質0.9保持のため、リサイズせず最大解像度を維持
+      // 品質保持のため、最大解像度を維持
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
@@ -1258,36 +1324,38 @@
       elements.btnRetake.style.display = 'inline-flex';
       elements.btnNextShot.style.display = 'inline-flex';
 
-      savePhotoToServer();
+      savePhotoToLocal();
     }
 
     /**
-     * 撮影した画像をGASサーバーに保存する
+     * 撮影した画像をローカル（IndexedDB）に一時保存する
      */
-    function savePhotoToServer() {
+    async function savePhotoToLocal() {
       toggleLoading(true, "写真を保存しています...");
 
       elements.btnRetake.disabled = true;
       elements.btnNextShot.disabled = true;
 
       const currentStep = state.shotsList[state.currentStepIndex];
+      const dbKey = `${state.jobId}_photo_${currentStep.ShotKey}`;
 
-      callGasApi("savePhoto", {
-        jobId: state.jobId,
-        shotKey: currentStep.ShotKey,
-        base64Image: state.currentBase64Image
-      })
-        .then(response => {
-          toggleLoading(false);
-          elements.btnRetake.disabled = false;
-          elements.btnNextShot.disabled = false;
-        })
-        .catch(err => {
-          toggleLoading(false);
-          elements.btnRetake.disabled = false;
-          elements.btnNextShot.disabled = true;
-          alert("写真の保存に失敗しました。通信状態を確認して再試行（撮り直し）してください。\n\n詳細: " + err.message);
-        });
+      try {
+        const photoInfo = {
+          jobId: state.jobId,
+          shotKey: currentStep.ShotKey,
+          base64Image: state.currentBase64Image
+        };
+        await localSavePhoto(dbKey, photoInfo);
+        
+        toggleLoading(false);
+        elements.btnRetake.disabled = false;
+        elements.btnNextShot.disabled = false;
+      } catch (err) {
+        toggleLoading(false);
+        elements.btnRetake.disabled = false;
+        elements.btnNextShot.disabled = true;
+        alert("端末への写真保存に失敗しました。お手数ですが撮り直してください。\n\n詳細: " + err.message);
+      }
     }
 
     /**
@@ -1319,7 +1387,8 @@
         resetChecklistForm();
         showScreen(elements.checklistScreen);
       } else if (state.currentStepIndex === state.shotsList.length - 1) {
-        handleCompleteJob();
+        // すべての写真撮影と確認が完了。一括送信を開始します。
+        startBulkUpload();
       } else {
         state.currentStepIndex++;
         loadCurrentStep();
@@ -1344,37 +1413,162 @@
     /**
      * チェック完了して次へボタンクリック時の処理
      */
-    function handleSubmitChecklist() {
-      toggleLoading(true, "チェック内容を保存しています...");
-
+    async function handleSubmitChecklist() {
       const checklistData = {};
       elements.chkItems.forEach(chk => {
         checklistData[chk.value] = chk.checked;
       });
 
-      // 1. 同期的にカメラの起動を試みる (iOS Safariのジェスチャー要件回避)
-      startCameraPromise()
-        .then(() => {
-          // 2. カメラ起動が成功したら、裏でGASサーバーに保存
-          callGasApi("saveChecklist", {
+      state.checklistData = checklistData;
+
+      toggleLoading(true, "チェック内容を一時保存しています...");
+      
+      try {
+        // メタデータ（チェックリストと撮影項目リスト）を一時保存
+        const metadataKey = `${state.jobId}_metadata`;
+        const metadata = {
+          jobId: state.jobId,
+          checklistData: checklistData,
+          shotsList: state.shotsList,
+          userAgent: navigator.userAgent
+        };
+        await localSavePhoto(metadataKey, metadata);
+
+        // 同期的にカメラの起動を試みる (iOS Safariのジェスチャー要件回避)
+        await startCameraPromise();
+        
+        toggleLoading(false);
+        state.currentStepIndex++;
+        showScreen(elements.cameraScreen);
+        loadCurrentStepWithoutRestartingCamera();
+      } catch (err) {
+        toggleLoading(false);
+        alert("保存に失敗しました。カメラのアクセス許可またはストレージを確認してください。\nエラー: " + err.message);
+      }
+    }
+
+    // ----------------------------------------------------
+    // ★一括送信 (Bulk Upload) ロジック★
+    // ----------------------------------------------------
+
+    /**
+     * 一括アップロードプロセスを開始します
+     */
+    async function startBulkUpload() {
+      showScreen(elements.uploadScreen);
+      elements.uploadErrorContainer.style.display = 'none';
+      elements.uploadStatusText.textContent = "端末に保存されたデータを送信しています...";
+      
+      const uploadSuccess = await executeBulkUpload();
+      
+      if (uploadSuccess) {
+        handleCompleteJob();
+      }
+    }
+
+    /**
+     * IndexedDBのデータを順番にGASにアップロードします
+     * @return {Promise<boolean>} すべてのデータが正常にアップロードできたか
+     */
+    async function executeBulkUpload() {
+      try {
+        // 1. メタデータ（チェックリスト情報など）の取得
+        const metadataKey = `${state.jobId}_metadata`;
+        let metadata = await localGetPhoto(metadataKey);
+        
+        // メタデータがローカルにない場合のフォールバック（メモリ状態から再構成）
+        if (!metadata) {
+          metadata = {
             jobId: state.jobId,
-            checklistItems: checklistData
-          })
-            .then(() => {
-              toggleLoading(false);
-              state.currentStepIndex++;
-              showScreen(elements.cameraScreen);
-              loadCurrentStepWithoutRestartingCamera();
-            })
-            .catch(err => {
-              stopCamera();
-              onApiFailure(err);
+            checklistData: state.checklistData,
+            shotsList: state.shotsList,
+            userAgent: navigator.userAgent
+          };
+          await localSavePhoto(metadataKey, metadata);
+        }
+
+        // 2. チェックリストの送信（まだ送信されていない場合）
+        if (metadata.checklistData) {
+          elements.uploadStatusText.textContent = "チェックリストを送信しています...";
+          elements.uploadProgressBar.style.width = "5%";
+          elements.uploadProgressText.textContent = "送信中...";
+          
+          await callGasApi("saveChecklist", {
+            jobId: metadata.jobId,
+            checklistItems: metadata.checklistData
+          });
+          
+          // チェックリスト送信成功したら、メタデータのchecklistData部分をクリアしてIndexedDBを更新
+          metadata.checklistData = null;
+          await localSavePhoto(metadataKey, metadata);
+        }
+
+        // 3. 各写真の送信
+        const allPhotosKey = state.shotsList.map(shot => `${state.jobId}_photo_${shot.ShotKey}`);
+        const totalPhotos = allPhotosKey.length;
+        let successCount = 0;
+
+        // すでに前回の試行で送信に成功している分をチェックしてカウンタ初期化
+        for (let i = 0; i < totalPhotos; i++) {
+          const key = allPhotosKey[i];
+          const photoData = await localGetPhoto(key);
+          if (!photoData) {
+            successCount++; // すでにローカルから削除されている＝送信成功済み
+          }
+        }
+
+        updateUploadProgress(successCount, totalPhotos);
+
+        // 写真を1枚ずつ順番に送信
+        for (let i = 0; i < totalPhotos; i++) {
+          const key = allPhotosKey[i];
+          const currentShot = state.shotsList[i];
+          const photoData = await localGetPhoto(key);
+          
+          if (photoData) {
+            elements.uploadStatusText.textContent = `写真を送信しています: ${currentShot.ShotName}`;
+            
+            // GAS API の呼び出し
+            await callGasApi("savePhoto", {
+              jobId: photoData.jobId,
+              shotKey: photoData.shotKey,
+              base64Image: photoData.base64Image
             });
-        })
-        .catch(err => {
-          toggleLoading(false);
-          alert("カメラを起動できません。\n\n[エラー]: " + err.name + " - " + err.message + "\n\n本体のカメラ設定許可をご確認ください。");
-        });
+
+            // 送信完了したらIndexedDBから該当写真を削除
+            await localDeletePhoto(key);
+            successCount++;
+            updateUploadProgress(successCount, totalPhotos);
+          }
+        }
+
+        // すべて送信に成功したらメタデータもクリア
+        await localDeletePhoto(metadataKey);
+        return true;
+
+      } catch (err) {
+        console.error("アップロード失敗: ", err);
+        elements.uploadStatusText.textContent = "通信エラーが発生しました";
+        elements.uploadErrorMessage.textContent = "送信中にエラーが発生しました。電波の良い場所へ移動し、再試行ボタンを押してください。\n\n[詳細]: " + err.message;
+        elements.uploadErrorContainer.style.display = 'block';
+        return false;
+      }
+    }
+
+    /**
+     * 進捗インジケーターの更新
+     */
+    function updateUploadProgress(success, total) {
+      const percent = (success / total) * 100;
+      elements.uploadProgressBar.style.width = `${percent}%`;
+      elements.uploadProgressText.textContent = `送信完了: ${success} / ${total} 枚`;
+    }
+
+    /**
+     * 送信再試行のイベント
+     */
+    function handleRetryUpload() {
+      startBulkUpload();
     }
 
     /**
@@ -1389,20 +1583,69 @@
           elements.summaryJobId.textContent = state.jobId;
           showScreen(elements.completeScreen);
         })
-        .catch(onApiFailure);
+        .catch(err => {
+          toggleLoading(false);
+          // 送信自体はすべて完了しているため、完了確認APIだけ失敗した場合は警告を出しつつ完了とする
+          alert("すべての写真は正常に送信されましたが、完了の確認処理で通信エラーが発生しました。スプレッドシートをご確認ください。\n\n詳細: " + err.message);
+          elements.summaryJobId.textContent = state.jobId;
+          showScreen(elements.completeScreen);
+        });
     }
 
     /**
      * 完了画面から「最初の画面に戻る」ボタンクリック時の処理
      */
-    function handleFinish() {
+    async function handleFinish() {
+      toggleLoading(true, "データをクリアしています...");
+      try {
+        await localClearDb();
+      } catch (err) {
+        console.error("DBクリアエラー: ", err);
+      }
+      toggleLoading(false);
+
       state.jobId = null;
       state.currentStepIndex = 0;
       state.shotsList = [];
       state.currentBase64Image = null;
+      state.checklistData = null;
       stopCamera();
 
       showScreen(elements.startScreen);
+    }
+
+    /**
+     * アプリ起動時に未送信データが残っているか確認し、あれば復旧を提案する
+     */
+    async function checkUnsentDataOnStartup() {
+      try {
+        const photos = await localGetAllPhotos();
+        const keys = Object.keys(photos);
+        
+        // メタデータキーを探す
+        const metadataKey = keys.find(k => k.endsWith("_metadata"));
+        
+        if (metadataKey && keys.length > 1) {
+          const metadata = photos[metadataKey];
+          const confirmed = confirm(`前回の未送信データが端末に残っています。\n作業ID: ${metadata.jobId}\n\n送信を再開（アップロード）しますか？\n\n※「キャンセル」を押すと前回の撮影データは削除されます。`);
+          
+          if (confirmed) {
+            state.jobId = metadata.jobId;
+            state.shotsList = metadata.shotsList;
+            state.checklistData = metadata.checklistData;
+            
+            // 一括送信画面に遷移して再開
+            startBulkUpload();
+          } else {
+            await localClearDb();
+          }
+        } else if (keys.length > 0) {
+          // 不完全な一時写真データのみの場合はクリーンアップ
+          await localClearDb();
+        }
+      } catch (err) {
+        console.error("未送信データチェック中にエラーが発生しました: ", err);
+      }
     }
 
     /**
