@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Container CleanShot</title>
+  <!-- Google Fonts (Outfit & Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+    rel="stylesheet">
+
+  <!-- CSS (style.htmlの内容をインライン化) -->
+  <style>
+    /* CSS Variables for Premium Dark/Glassmorphism theme */
+    :root {
+      --bg-primary: #090d16;
+      --bg-secondary: #111726;
+      --bg-glass: rgba(17, 23, 38, 0.75);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+
+      --accent-color: #6366f1;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+      --accent-hover: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+
+      --color-success: #10b981;
+      --color-success-hover: #059669;
+      --color-danger: #ef4444;
+      --color-danger-hover: #dc2626;
+
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-circle: 50%;
+
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.4);
+
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+
+    #app-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+      background-color: var(--bg-secondary);
+    }
+
+    /* SPA Screen Structure */
+    .screen {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 24px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow-y: auto;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .screen.active {
+      display: flex;
+      opacity: 1;
+      z-index: 10;
+    }
+
+    /* Typography styles */
+    .brand-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      text-align: center;
+    }
+
+    .logo-container {
+      width: 90px;
+      height: 90px;
+      background: var(--accent-gradient);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-glow);
+      animation: logo-float 4s ease-in-out infinite alternate;
+    }
+
+    .logo-svg {
+      width: 48px;
+      height: 48px;
+      color: white;
+    }
+
+    .app-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    .app-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Headers */
+    .screen-header {
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-circle);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-circle);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .shot-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: white;
+      margin-top: 4px;
+    }
+
+    /* Camera Viewport Area */
+    .camera-viewport-container {
+      flex-grow: 1;
+      width: 100%;
+      background-color: #000;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #camera-stream,
+    .photo-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      animation: preview-fade-in 0.25s ease-out;
+    }
+
+    /* Buttons and Controls */
+    .action-section {
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-family);
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-primary:disabled {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.3);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+    }
+
+    .btn-secondary.active {
+      background-color: rgba(99, 102, 241, 0.2);
+      border-color: var(--accent-color);
+      color: white;
+    }
+
+    .btn-success {
+      background-color: var(--color-success);
+      color: white;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background-color: var(--color-success-hover);
+    }
+
+    .btn-success:disabled {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: rgba(255, 255, 255, 0.3);
+      cursor: not-allowed;
+    }
+
+    .btn-danger {
+      background-color: var(--color-danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--color-danger-hover);
+    }
+
+    .btn-large {
+      width: 100%;
+      padding: 18px 24px;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+
+    .btn-icon {
+      margin-left: 8px;
+      font-size: 1.1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-large:hover .btn-icon {
+      transform: translateX(4px);
+    }
+
+    /* Camera screen specific controls */
+    .camera-controls {
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .controls-top {
+      display: flex;
+      justify-content: center;
+    }
+
+    .controls-main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      min-height: 84px;
+    }
+
+    .btn-circle {
+      width: 76px;
+      height: 76px;
+      border-radius: var(--radius-circle);
+      background: white;
+      padding: 6px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+      z-index: 5;
+    }
+
+    .circle-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-circle);
+      background: var(--accent-gradient);
+      border: 3px solid white;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-circle:active .circle-inner {
+      transform: scale(0.9);
+    }
+
+    .retake-next-group {
+      position: absolute;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+      pointer-events: none;
+    }
+
+    .retake-next-group .btn {
+      pointer-events: auto;
+      width: 45%;
+      padding: 14px 20px;
+      font-size: 1rem;
+      box-shadow: var(--shadow-lg);
+      animation: control-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Checklist custom styling */
+    .checklist-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .checklist-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .checklist-item input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkbox-custom {
+      height: 28px;
+      width: 28px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      margin-right: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .checklist-item input[type="checkbox"]:checked~.checkbox-custom {
+      background: var(--accent-gradient);
+      border-color: var(--accent-color);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .checkbox-custom::after {
+      content: "";
+      width: 6px;
+      height: 12px;
+      border: solid white;
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg) scale(0);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-bottom: 2px;
+    }
+
+    .checklist-item input[type="checkbox"]:checked~.checkbox-custom::after {
+      transform: rotate(45deg) scale(1);
+    }
+
+    .checklist-label {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text-main);
+      line-height: 1.4;
+      transition: color 0.2s ease;
+    }
+
+    .checklist-item input[type="checkbox"]:checked~.checklist-label {
+      color: white;
+    }
+
+    /* Success / Completion page styles */
+    .success-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .success-icon-container {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(16, 185, 129, 0.15);
+      border-radius: var(--radius-circle);
+      border: 2px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-success);
+      margin-bottom: 24px;
+      animation: success-bounce 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .success-svg {
+      width: 42px;
+      height: 42px;
+    }
+
+    .text-success {
+      color: var(--color-success) !important;
+      font-weight: 600;
+    }
+
+    .job-summary-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin: 32px 0;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+    }
+
+    .summary-label {
+      color: var(--text-muted);
+    }
+
+    .summary-value {
+      font-weight: 600;
+      color: white;
+    }
+
+    #summary-job-id {
+      font-family: monospace;
+      font-size: 0.95rem;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(9, 13, 22, 0.85);
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(99, 102, 241, 0.1);
+      border-top-color: var(--accent-color);
+      border-radius: var(--radius-circle);
+      animation: spin 1s linear infinite;
+    }
+
+    /* Animations */
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes logo-float {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes success-bounce {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      70% {
+        transform: scale(0.9);
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes control-slide-in {
+      0% {
+        transform: translateY(15px);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes preview-fade-in {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app-container">
+
+    <!-- 1. 開始画面 -->
+    <div id="start-screen" class="screen active">
+      <div class="brand-section">
+        <div class="logo-container">
+          <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+            </path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <h1 class="app-title">Container CleanShot</h1>
+        <p class="app-subtitle">コンテナ清掃・写真撮影ガイド</p>
+      </div>
+      <div class="action-section">
+        <button id="btn-start" class="btn btn-primary btn-large">
+          撮影を開始する
+          <span class="btn-icon">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. 撮影画面 -->
+    <div id="camera-screen" class="screen">
+      <div class="screen-header">
+        <div class="progress-container">
+          <div class="progress-bar-bg">
+            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+          <div id="progress-text" class="progress-text">準備中...</div>
+        </div>
+        <h2 id="shot-title" class="shot-title">項目名</h2>
+      </div>
+
+      <div class="camera-viewport-container">
+        <!-- カメラの生映像 -->
+        <video id="camera-stream" autoplay playsinline muted></video>
+        <!-- 撮影後のプレビュー用画像（初期非表示） -->
+        <img id="photo-preview" class="photo-preview" src="" alt="プレビュー" style="display: none;">
+
+        <!-- 透過オーバーレイガイド (overlay.html の内容をインライン化) -->
+        <div id="overlay-container">
+
+          <!-- WIDE (全体広角撮影用) -->
+          <svg class="guide-overlay" id="guide-WIDE" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <rect x="5" y="5" width="90" height="90" rx="3" fill="none" stroke="white" stroke-width="2"
+              stroke-dasharray="4 4" opacity="0.6" />
+            <circle cx="50" cy="50" r="4" fill="white" opacity="0.5" />
+            <line x1="50" y1="40" x2="50" y2="60" stroke="white" stroke-width="1.5" opacity="0.5" />
+            <line x1="40" y1="50" x2="60" y2="50" stroke="white" stroke-width="1.5" opacity="0.5" />
+          </svg>
+
+          <!-- BOX (コンテナNo.用) -->
+          <svg class="guide-overlay" id="guide-BOX" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <rect x="55" y="20" width="35" height="60" rx="4" fill="none" stroke="yellow" stroke-width="2.5"
+              opacity="0.75" />
+            <text x="72.5" y="15" fill="yellow" font-size="5" font-weight="bold" text-anchor="middle"
+              opacity="0.8">コンテナNo.</text>
+            <line x1="30" y1="50" x2="40" y2="50" stroke="white" stroke-width="1" opacity="0.4" />
+            <line x1="35" y1="45" x2="35" y2="55" stroke="white" stroke-width="1" opacity="0.4" />
+          </svg>
+
+          <!-- BACK (コンテナ奥の壁) -->
+          <svg class="guide-overlay" id="guide-BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="2.5" opacity="0.75" />
+            <line x1="0" y1="0" x2="35" y2="35" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
+              opacity="0.4" />
+            <line x1="100" y1="0" x2="65" y2="35" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
+              opacity="0.4" />
+            <line x1="0" y1="100" x2="35" y2="65" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
+              opacity="0.4" />
+            <line x1="100" y1="100" x2="65" y2="65" stroke="white" stroke-width="1.5" stroke-dasharray="2 2"
+              opacity="0.4" />
+            <text x="50" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.8">奥の壁面をここに合わせる</text>
+          </svg>
+
+          <!-- LEFT_BACK (壁面左奥) -->
+          <svg class="guide-overlay" id="guide-LEFT_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="10,30 35,35 35,65 10,70" fill="rgba(99, 102, 241, 0.1)" stroke="#6366f1" stroke-width="2.5"
+              opacity="0.8" />
+            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
+              stroke-dasharray="2 2" opacity="0.3" />
+            <text x="22.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.9">左側奥の壁</text>
+          </svg>
+
+          <!-- LEFT_FRONT (壁面左手前) -->
+          <svg class="guide-overlay" id="guide-LEFT_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="5,15 40,30 40,70 5,85" fill="rgba(99, 102, 241, 0.15)" stroke="#6366f1" stroke-width="2.5"
+              opacity="0.8" />
+            <text x="22.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.9">左側手前の壁</text>
+          </svg>
+
+          <!-- RIGHT_BACK (壁面右奥) -->
+          <svg class="guide-overlay" id="guide-RIGHT_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="65,35 90,30 90,70 65,65" fill="rgba(99, 102, 241, 0.1)" stroke="#6366f1" stroke-width="2.5"
+              opacity="0.8" />
+            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
+              stroke-dasharray="2 2" opacity="0.3" />
+            <text x="77.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.9">右側奥の壁</text>
+          </svg>
+
+          <!-- RIGHT_FRONT (壁面右手前) -->
+          <svg class="guide-overlay" id="guide-RIGHT_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="60,30 95,15 95,85 60,70" fill="rgba(99, 102, 241, 0.15)" stroke="#6366f1"
+              stroke-width="2.5" opacity="0.8" />
+            <text x="77.5" y="51" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.9">右側手前の壁</text>
+          </svg>
+
+          <!-- CEILING_BACK (天井奥) -->
+          <svg class="guide-overlay" id="guide-CEILING_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="30,10 70,10 65,35 35,35" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b" stroke-width="2.5"
+              opacity="0.8" />
+            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
+              stroke-dasharray="2 2" opacity="0.3" />
+            <text x="50" y="22" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.9">天井の奥側</text>
+          </svg>
+
+          <!-- CEILING_FRONT (天井手前) -->
+          <svg class="guide-overlay" id="guide-CEILING_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="10,5 90,5 60,30 40,30" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="2.5"
+              opacity="0.8" />
+            <text x="50" y="18" fill="white" font-size="4" font-weight="bold" text-anchor="middle" opacity="0.9">天井の手前側
+              (結露確認)</text>
+          </svg>
+
+          <!-- FLOOR_BACK (床奥) -->
+          <svg class="guide-overlay" id="guide-FLOOR_BACK" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="35,65 65,65 70,90 30,90" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" stroke-width="2.5"
+              opacity="0.8" />
+            <rect x="35" y="35" width="30" height="30" fill="none" stroke="white" stroke-width="1"
+              stroke-dasharray="2 2" opacity="0.3" />
+            <text x="50" y="80" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.9">床の奥側</text>
+          </svg>
+
+          <!-- FLOOR_FRONT (床手前) -->
+          <svg class="guide-overlay" id="guide-FLOOR_FRONT" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="40,70 60,70 90,95 10,95" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981"
+              stroke-width="2.5" opacity="0.8" />
+            <text x="50" y="86" fill="white" font-size="4" font-weight="bold" text-anchor="middle"
+              opacity="0.9">床の手前側</text>
+          </svg>
+
+        </div>
+
+        <style>
+          #overlay-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+          }
+
+          .guide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            animation: overlay-fade 0.3s ease-out;
+          }
+
+          .guide-overlay.active {
+            display: block;
+          }
+
+          @keyframes overlay-fade {
+            from {
+              opacity: 0;
+              transform: scale(1.02);
+            }
+
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+        </style>
+
+        <!-- ローディングスピナー -->
+        <div id="loading-overlay" class="loading-overlay">
+          <div class="spinner"></div>
+          <p id="loading-message">保存中...</p>
+        </div>
+      </div>
+
+      <div class="camera-controls">
+        <div class="controls-top">
+          <button id="btn-toggle-guide" class="btn btn-secondary btn-sm active">ガイド: ON</button>
+        </div>
+        <div class="controls-main">
+          <!-- 撮影用丸ボタン -->
+          <button id="btn-capture" class="btn btn-primary btn-circle" title="撮影">
+            <div class="circle-inner"></div>
+          </button>
+
+          <div class="retake-next-group">
+            <button id="btn-retake" class="btn btn-danger" style="display: none;">撮り直し</button>
+            <button id="btn-next-shot" class="btn btn-success" style="display: none;" disabled>次へ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 清掃チェックリスト画面 -->
+    <div id="checklist-screen" class="screen">
+      <div class="screen-header">
+        <h2 class="section-title">清掃確認</h2>
+        <p class="section-subtitle">以下の項目をすべて確認し、チェックを入れてください。</p>
+      </div>
+
+      <div class="checklist-container">
+        <div class="checklist-card">
+          <label class="checklist-item">
+            <input type="checkbox" class="chk-item" value="FLOOR_TRASH">
+            <span class="checkbox-custom"></span>
+            <span class="checklist-label">床面のゴミ・木片・釘を除去した</span>
+          </label>
+          <label class="checklist-item">
+            <input type="checkbox" class="chk-item" value="CONDENSATION">
+            <span class="checkbox-custom"></span>
+            <span class="checklist-label">天井や壁面に結露がないことを確認した</span>
+          </label>
+          <label class="checklist-item">
+            <input type="checkbox" class="chk-item" value="FLOOR_WET_MUD">
+            <span class="checkbox-custom"></span>
+            <span class="checklist-label">床面の水濡れ・泥汚れを確認した</span>
+          </label>
+          <label class="checklist-item">
+            <input type="checkbox" class="chk-item" value="FOOTPRINTS">
+            <span class="checkbox-custom"></span>
+            <span class="checklist-label">床面に靴跡がないことを確認した</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="action-section">
+        <button id="btn-submit-checklist" class="btn btn-primary btn-large" disabled>
+          チェック完了して次へ
+          <span class="btn-icon">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 4. 完了画面 -->
+    <div id="complete-screen" class="screen">
+      <div class="success-section">
+        <div class="success-icon-container">
+          <svg class="success-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h1 class="app-title">撮影完了</h1>
+        <p class="app-subtitle">すべての必須写真が保存されました。</p>
+      </div>
+
+      <div class="job-summary-card">
+        <div class="summary-row">
+          <span class="summary-label">作業ID:</span>
+          <span id="summary-job-id" class="summary-value">-</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">保存枚数:</span>
+          <span class="summary-value">12 / 12 枚</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">清掃確認:</span>
+          <span class="summary-value text-success">完了</span>
+        </div>
+      </div>
+
+      <div class="action-section">
+        <button id="btn-finish" class="btn btn-primary btn-large">
+          最初の画面に戻る
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript (app.js.htmlの内容をインライン化 & fetchAPIへ書き換え) -->
+  <script>
+    // ----------------------------------------------------
+    // ★接続設定: デプロイ後のGAS Web App URLを入力してください★
+    // ----------------------------------------------------
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzoaWWFfzlRiGY_lB6_dleaJ8tq2kw9mGxh5U0Eb7zQJJsPQLHbAR2q-OTLEO1ppC7k/exec";
+
+    /**
+     * GASのWeb APIを呼び出します（CORS対策のため text/plain でPOST）。
+     * @param {string} action - 実行したいアクション名
+     * @param {Object} [data={}] - 送信するデータ
+     * @return {Promise}
+     */
+    function callGasApi(action, data = {}) {
+      if (!GAS_API_URL || GAS_API_URL.includes("★")) {
+        return Promise.reject(new Error("接続先GASのURLが設定されていません。プログラム内の GAS_API_URL を設定してください。"));
+      }
+
+      const payload = {
+        action: action,
+        ...data
+      };
+
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", GAS_API_URL, true);
+        xhr.setRequestHeader("Content-Type", "text/plain");
+
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const json = JSON.parse(xhr.responseText);
+              if (json.success) {
+                resolve(json.data);
+              } else {
+                reject(new Error(json.error || "不明なAPIエラー"));
+              }
+            } catch (e) {
+              reject(new Error("データ（JSON）の解析に失敗しました: " + e.message));
+            }
+          } else {
+            reject(new Error("HTTPエラー: " + xhr.status));
+          }
+        };
+
+        xhr.onerror = function() {
+          reject(new Error("通信中にエラーが発生しました（Load failed）。CORSまたはトラッキング設定をお確かめください。"));
+        };
+
+        xhr.send(JSON.stringify(payload));
+      });
+    }
+
+    // アプリケーションの状態管理オブジェクト
+    const state = {
+      jobId: null,             // 現在の作業ID
+      currentStepIndex: 0,     // 現在の進行ステップ (0〜11)
+      isGuideOn: true,         // 透過ガイドの表示ON/OFF状態
+      shotsList: [],           // 撮影項目定義リスト (マスタから読み込み)
+      mediaStream: null,       // カメラのストリーム情報
+      currentBase64Image: null // 撮影した画像の一時保存用 (Base64文字列)
+    };
+
+    // 画面内のHTML要素への参照一覧
+    const elements = {
+      // 各画面
+      startScreen: document.getElementById('start-screen'),
+      cameraScreen: document.getElementById('camera-screen'),
+      checklistScreen: document.getElementById('checklist-screen'),
+      completeScreen: document.getElementById('complete-screen'),
+
+      // ボタン要素
+      btnStart: document.getElementById('btn-start'),
+      btnToggleGuide: document.getElementById('btn-toggle-guide'),
+      btnCapture: document.getElementById('btn-capture'),
+      btnRetake: document.getElementById('btn-retake'),
+      btnNextShot: document.getElementById('btn-next-shot'),
+      btnSubmitChecklist: document.getElementById('btn-submit-checklist'),
+      btnFinish: document.getElementById('btn-finish'),
+
+      // 動的表示領域
+      progressBarFill: document.getElementById('progress-bar-fill'),
+      progressText: document.getElementById('progress-text'),
+      shotTitle: document.getElementById('shot-title'),
+      cameraStream: document.getElementById('camera-stream'),
+      photoPreview: document.getElementById('photo-preview'),
+      loadingOverlay: document.getElementById('loading-overlay'),
+      loadingMessage: document.getElementById('loading-message'),
+      summaryJobId: document.getElementById('summary-job-id'),
+
+      // チェック項目
+      chkItems: document.querySelectorAll('.chk-item')
+    };
+
+    // アプリ起動時の初期化処理
+    document.addEventListener('DOMContentLoaded', () => {
+      setupEventListeners();
+    });
+
+    // イベントリスナーの設定
+    function setupEventListeners() {
+      elements.btnStart.addEventListener('click', handleStartJob);
+      elements.btnToggleGuide.addEventListener('click', handleToggleGuide);
+      elements.btnCapture.addEventListener('click', handleCapture);
+      elements.btnRetake.addEventListener('click', handleRetake);
+      elements.btnNextShot.addEventListener('click', handleNextShot);
+      elements.btnSubmitChecklist.addEventListener('click', handleSubmitChecklist);
+      elements.btnFinish.addEventListener('click', handleFinish);
+
+      elements.chkItems.forEach(chk => {
+        chk.addEventListener('change', checkChecklistValidation);
+      });
+    }
+
+    /**
+     * 画面切り替えの処理
+     */
+    function showScreen(activeScreen) {
+      [elements.startScreen, elements.cameraScreen, elements.checklistScreen, elements.completeScreen].forEach(screen => {
+        screen.classList.remove('active');
+      });
+      activeScreen.classList.add('active');
+    }
+
+    /**
+     * ローディング表示の制御
+     */
+    function toggleLoading(show, message = "処理中...") {
+      if (show) {
+        elements.loadingMessage.textContent = message;
+        elements.loadingOverlay.classList.add('active');
+      } else {
+        elements.loadingOverlay.classList.remove('active');
+      }
+    }
+
+    /**
+     * 1. 開始画面 ➡ 「撮影を開始する」ボタンクリック時の処理
+     */
+    function handleStartJob() {
+      toggleLoading(true, "作業IDを生成しています...");
+
+      // 1. 同期的にカメラの起動を試みる (iOS Safariのジェスチャー要件回避)
+      startCameraPromise()
+        .then(() => {
+          // カメラが起動できたら、裏でGASサーバーの startJob を呼び出す
+          callGasApi("startJob", { userAgent: navigator.userAgent })
+            .then(response => {
+              toggleLoading(false);
+              state.jobId = response.jobId;
+              state.shotsList = response.shotsList;
+              state.currentStepIndex = 0;
+
+              // 撮影画面へ遷移し、最初の撮影項目を読み込む (カメラは再起動しない)
+              showScreen(elements.cameraScreen);
+              loadCurrentStepWithoutRestartingCamera();
+            })
+            .catch(err => {
+              stopCamera();
+              onApiFailure(err);
+            });
+        })
+        .catch(err => {
+          toggleLoading(false);
+          alert("カメラを起動できません。\n\n[エラー]: " + err.name + " - " + err.message + "\n\nSafariブラウザ本体で開いているか、本体のカメラ設定許可をご確認ください。");
+        });
+    }
+
+    /**
+     * 2. 撮影画面 ➡ 現在のステップ（撮影項目）の読み込みと表示制御
+     * (カメラの再起動を伴わない版)
+     */
+    function loadCurrentStepWithoutRestartingCamera() {
+      const currentStep = state.shotsList[state.currentStepIndex];
+
+      // 進捗バーとテキストの更新
+      const progressPercent = ((state.currentStepIndex) / state.shotsList.length) * 100;
+      elements.progressBarFill.style.width = `${progressPercent}%`;
+      elements.progressText.textContent = `ステップ ${state.currentStepIndex + 1} / ${state.shotsList.length}`;
+
+      // 項目名の表示
+      elements.shotTitle.textContent = `${currentStep.ShotNo} ${currentStep.ShotName}`;
+
+      // 撮影ステートの初期化
+      state.currentBase64Image = null;
+      elements.photoPreview.style.display = 'none';
+      elements.photoPreview.src = '';
+
+      // ビデオ表示の再開
+      elements.cameraStream.style.display = 'block';
+
+      // ボタン表示の初期化
+      elements.btnCapture.style.display = 'inline-flex';
+      elements.btnCapture.disabled = false;
+      elements.btnRetake.style.display = 'none';
+      elements.btnNextShot.style.display = 'none';
+      elements.btnNextShot.disabled = true;
+
+      // ガイド表示の更新
+      updateGuideDisplay();
+    }
+
+    function loadCurrentStep() {
+      loadCurrentStepWithoutRestartingCamera();
+      startCamera();
+    }
+
+    /**
+     * 透過ガイドの表示ON/OFFボタンクリック時の処理
+     */
+    function handleToggleGuide() {
+      state.isGuideOn = !state.isGuideOn;
+      if (state.isGuideOn) {
+        elements.btnToggleGuide.classList.add('active');
+        elements.btnToggleGuide.textContent = 'ガイド: ON';
+      } else {
+        elements.btnToggleGuide.classList.remove('active');
+        elements.btnToggleGuide.textContent = 'ガイド: OFF';
+      }
+      updateGuideDisplay();
+    }
+
+    /**
+     * ガイドの表示切替処理
+     */
+    function updateGuideDisplay() {
+      const guides = document.querySelectorAll('.guide-overlay');
+      guides.forEach(g => g.classList.remove('active'));
+
+      if (state.isGuideOn && state.shotsList[state.currentStepIndex]) {
+        const currentStep = state.shotsList[state.currentStepIndex];
+        const targetGuide = document.getElementById(`guide-${currentStep.OverlayType}`);
+        if (targetGuide) {
+          targetGuide.classList.add('active');
+        }
+      }
+    }
+
+    /**
+     * カメラを起動し、Promiseを返します。
+     */
+    function startCameraPromise() {
+      if (state.mediaStream) {
+        stopCamera();
+      }
+
+      const constraints = {
+        video: {
+          facingMode: { ideal: "environment" }
+        },
+        audio: false
+      };
+
+      return new Promise((resolve, reject) => {
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(stream => {
+            state.mediaStream = stream;
+            elements.cameraStream.srcObject = stream;
+            elements.cameraStream.style.display = 'block';
+            resolve(stream);
+          })
+          .catch(err => {
+            console.error("カメラ起動エラー(背面): ", err);
+            // 背面カメラに失敗した場合はフォールバック
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+              .then(stream => {
+                state.mediaStream = stream;
+                elements.cameraStream.srcObject = stream;
+                elements.cameraStream.style.display = 'block';
+                resolve(stream);
+              })
+              .catch(err2 => {
+                reject(err2);
+              });
+          });
+      });
+    }
+
+    function startCamera() {
+      startCameraPromise().catch(err => {
+        alert("カメラを起動できません。\n\n[エラー]: " + err.name + " - " + err.message + "\n\nSafariブラウザ本体で開いているか、本体のカメラ設定許可をご確認ください。");
+      });
+    }
+
+    /**
+     * カメラの停止処理
+     */
+    function stopCamera() {
+      if (state.mediaStream) {
+        state.mediaStream.getTracks().forEach(track => track.stop());
+        state.mediaStream = null;
+      }
+    }
+
+    /**
+     * シャッター（撮影）ボタンクリック時の処理
+     */
+    function handleCapture() {
+      if (!state.mediaStream) return;
+
+      toggleLoading(true, "画像を処理しています...");
+
+      const video = elements.cameraStream;
+      const canvas = document.createElement('canvas');
+
+      // 品質0.9保持のため、リサイズせず最大解像度を維持
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      state.currentBase64Image = canvas.toDataURL('image/jpeg', 0.9);
+
+      elements.photoPreview.src = state.currentBase64Image;
+      elements.photoPreview.style.display = 'block';
+      video.style.display = 'none';
+
+      elements.btnCapture.style.display = 'none';
+      elements.btnRetake.style.display = 'inline-flex';
+      elements.btnNextShot.style.display = 'inline-flex';
+
+      savePhotoToServer();
+    }
+
+    /**
+     * 撮影した画像をGASサーバーに保存する
+     */
+    function savePhotoToServer() {
+      toggleLoading(true, "写真を保存しています...");
+
+      elements.btnRetake.disabled = true;
+      elements.btnNextShot.disabled = true;
+
+      const currentStep = state.shotsList[state.currentStepIndex];
+
+      callGasApi("savePhoto", {
+        jobId: state.jobId,
+        shotKey: currentStep.ShotKey,
+        base64Image: state.currentBase64Image
+      })
+        .then(response => {
+          toggleLoading(false);
+          elements.btnRetake.disabled = false;
+          elements.btnNextShot.disabled = false;
+        })
+        .catch(err => {
+          toggleLoading(false);
+          elements.btnRetake.disabled = false;
+          elements.btnNextShot.disabled = true;
+          alert("写真の保存に失敗しました。通信状態を確認して再試行（撮り直し）してください。\n\n詳細: " + err.message);
+        });
+    }
+
+    /**
+     * 撮り直しボタンクリック時の処理
+     */
+    function handleRetake() {
+      state.currentBase64Image = null;
+      elements.photoPreview.style.display = 'none';
+      elements.photoPreview.src = '';
+      elements.cameraStream.style.display = 'block';
+
+      elements.btnCapture.style.display = 'inline-flex';
+      elements.btnRetake.style.display = 'none';
+      elements.btnNextShot.style.display = 'none';
+      elements.btnNextShot.disabled = true;
+
+      startCamera();
+    }
+
+    /**
+     * 次へボタンクリック時の処理
+     */
+    function handleNextShot() {
+      stopCamera();
+
+      const currentStep = state.shotsList[state.currentStepIndex];
+
+      if (currentStep.ShotKey === 'BEFORE_FULL') {
+        resetChecklistForm();
+        showScreen(elements.checklistScreen);
+      } else if (state.currentStepIndex === state.shotsList.length - 1) {
+        handleCompleteJob();
+      } else {
+        state.currentStepIndex++;
+        loadCurrentStep();
+      }
+    }
+
+    /**
+     * 3. 清掃チェックリスト画面 ➡ チェック項目の入力状態の検証
+     */
+    function checkChecklistValidation() {
+      const allChecked = Array.from(elements.chkItems).every(chk => chk.checked);
+      elements.btnSubmitChecklist.disabled = !allChecked;
+    }
+
+    function resetChecklistForm() {
+      elements.chkItems.forEach(chk => {
+        chk.checked = false;
+      });
+      elements.btnSubmitChecklist.disabled = true;
+    }
+
+    /**
+     * チェック完了して次へボタンクリック時の処理
+     */
+    function handleSubmitChecklist() {
+      toggleLoading(true, "チェック内容を保存しています...");
+
+      const checklistData = {};
+      elements.chkItems.forEach(chk => {
+        checklistData[chk.value] = chk.checked;
+      });
+
+      // 1. 同期的にカメラの起動を試みる (iOS Safariのジェスチャー要件回避)
+      startCameraPromise()
+        .then(() => {
+          // 2. カメラ起動が成功したら、裏でGASサーバーに保存
+          callGasApi("saveChecklist", {
+            jobId: state.jobId,
+            checklistItems: checklistData
+          })
+            .then(() => {
+              toggleLoading(false);
+              state.currentStepIndex++;
+              showScreen(elements.cameraScreen);
+              loadCurrentStepWithoutRestartingCamera();
+            })
+            .catch(err => {
+              stopCamera();
+              onApiFailure(err);
+            });
+        })
+        .catch(err => {
+          toggleLoading(false);
+          alert("カメラを起動できません。\n\n[エラー]: " + err.name + " - " + err.message + "\n\n本体のカメラ設定許可をご確認ください。");
+        });
+    }
+
+    /**
+     * ジョブ全体の完了処理判定の要求
+     */
+    function handleCompleteJob() {
+      toggleLoading(true, "完了状態を確認しています...");
+
+      callGasApi("completeJob", { jobId: state.jobId })
+        .then(response => {
+          toggleLoading(false);
+          elements.summaryJobId.textContent = state.jobId;
+          showScreen(elements.completeScreen);
+        })
+        .catch(onApiFailure);
+    }
+
+    /**
+     * 完了画面から「最初の画面に戻る」ボタンクリック時の処理
+     */
+    function handleFinish() {
+      state.jobId = null;
+      state.currentStepIndex = 0;
+      state.shotsList = [];
+      state.currentBase64Image = null;
+      stopCamera();
+
+      showScreen(elements.startScreen);
+    }
+
+    /**
+     * 共通のAPI呼出失敗コールバック
+     */
+    function onApiFailure(error) {
+      toggleLoading(false);
+      alert("エラーが発生しました: " + (error.message || error) + "\n通信状態またはGASの公開設定を確認してください。");
+    }
+  </script>
+</body>
+
+</html>
