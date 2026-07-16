@@ -229,11 +229,11 @@
       position: absolute;
       bottom: 16px;
       left: 16px;
-      width: 70px; /* 左下にコンパクトに収まるサイズ */
+      width: 105px; /* 大きく表示 */
       aspect-ratio: 9 / 16;
       background: rgba(9, 13, 22, 0.85);
-      border: 1.5px solid white;
-      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.7); /* 最小の白枠 */
+      border-radius: 4px;
       overflow: hidden;
       z-index: 15; /* コントロールやボタンより前面に表示 */
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
@@ -243,13 +243,14 @@
     }
 
     .guide-thumbnail-label {
-      background: white;
-      color: #0f172a;
+      background: rgba(9, 13, 22, 0.7); /* 白背景から透明な黒に変更して白枠を極小化 */
+      color: white;
       font-size: 0.55rem;
       font-weight: bold;
       text-align: center;
-      padding: 1px 0;
+      padding: 2px 0;
       flex-shrink: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .guide-thumbnail {
@@ -508,42 +509,44 @@
       animation: control-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* 撮影画面専用：カメラの上に被せる絶対配置ヘッダー */
+    /* 撮影画面専用：カメラの上に被せる絶対配置ヘッダー（黒のシースルーグラデーションで可読性向上） */
     #camera-screen .screen-header {
       position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 10;
-      background: none;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 65%, rgba(0, 0, 0, 0) 100%);
       border: none;
       box-shadow: none;
-      padding: 0;
+      padding: 20px 20px 32px 20px;
       margin: 0;
       pointer-events: none;
     }
 
     #camera-screen .btn-home {
       pointer-events: auto;
+      padding: 6px 12px;
+      font-size: 0.8rem;
     }
 
     #camera-screen .shot-title {
-      font-size: 1.1rem; /* 見出しを小さく */
+      font-size: 1.4rem; /* 元の大きめのサイズを維持 */
       font-weight: 700;
       color: white !important;
-      margin-top: 4px;
-      text-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.9); /* テキストの影で視認性確保 */
+      margin-top: 6px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* テキストの影でさらに見やすく */
     }
 
     #camera-screen .progress-text {
-      font-size: 0.75rem; /* ステップ表記を小さく */
-      color: rgba(255, 255, 255, 0.8) !important;
+      font-size: 0.9rem; /* 元の大きめのサイズを維持 */
+      color: rgba(255, 255, 255, 0.95) !important;
       font-weight: 600;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     }
 
     #camera-screen .progress-bar-bg {
-      background-color: rgba(255, 255, 255, 0.2) !important;
+      background-color: rgba(255, 255, 255, 0.25) !important;
     }
 
     #camera-screen {
