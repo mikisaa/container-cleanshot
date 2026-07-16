@@ -527,10 +527,21 @@
       pointer-events: none;
     }
 
-    #camera-screen .btn-home {
+    #camera-screen .btn-home,
+    #camera-screen .btn-finish-early {
       pointer-events: auto;
       padding: 6px 12px;
       font-size: 0.8rem;
+    }
+
+    #camera-screen .btn-finish-early {
+      background: rgba(16, 185, 129, 0.2); /* やや緑色のシースルー背景で送信ボタンを強調 */
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    #camera-screen .btn-finish-early:hover {
+      background: rgba(16, 185, 129, 0.35);
+      border-color: rgba(16, 185, 129, 0.6);
     }
 
     #camera-screen .shot-title {
@@ -849,6 +860,14 @@
             </svg>
             最初に戻る
           </button>
+          <!-- 撮影を途中で終了するボタン -->
+          <button id="btn-finish-early" class="btn-home btn-finish-early" style="display: none; margin-left: auto;" title="撮影を終了して送信">
+            <svg class="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            撮影を終了して送信
+          </button>
         </div>
         <div class="progress-container">
           <div class="progress-bar-bg">
@@ -962,8 +981,15 @@
           <div class="progress-bar-bg">
             <div id="upload-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
           </div>
-          <div id="upload-progress-text" class="progress-text" style="margin-top: 8px;">送信中: 0 / 12 枚</div>
+          <div id="upload-progress-text" class="progress-text" style="margin-top: 8px;">送信中: 0 / -- 枚</div>
         </div>
+
+        <!-- オフライン・通信切断時の安心ガイダンス -->
+        <div style="margin-top: 16px; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4;">
+          💡 <strong>電波が途切れてもデータは消えません</strong><br>
+          送信が完全に完了するまで、写真は端末内部に安全に保存されます。通信エラーが発生した場合は、電波の良い場所に移動して「再試行する」を押してください。
+        </div>
+
         <div id="upload-error-container" style="display: none; text-align: center; margin-top: 16px;">
           <p class="text-danger" id="upload-error-message">送信中にエラーが発生しました。</p>
           <button id="btn-retry-upload" class="btn btn-primary" style="margin-top: 16px; width: 100%;">
@@ -994,7 +1020,7 @@
         </div>
         <div class="summary-row">
           <span class="summary-label">保存枚数:</span>
-          <span class="summary-value">12 / 12 枚</span>
+          <span id="summary-photo-count" class="summary-value">12 / 12 枚</span>
         </div>
         <div class="summary-row">
           <span class="summary-label">清掃確認:</span>
@@ -1109,6 +1135,7 @@
       btnSubmitChecklist: document.getElementById('btn-submit-checklist'),
       btnRetryUpload: document.getElementById('btn-retry-upload'),
       btnFinish: document.getElementById('btn-finish'),
+      btnFinishEarly: document.getElementById('btn-finish-early'),
 
       // 動的表示領域
       progressBarFill: document.getElementById('progress-bar-fill'),
@@ -1122,6 +1149,7 @@
       loadingOverlay: document.getElementById('loading-overlay'),
       loadingMessage: document.getElementById('loading-message'),
       summaryJobId: document.getElementById('summary-job-id'),
+      summaryPhotoCount: document.getElementById('summary-photo-count'),
 
       // アップロード画面用表示領域
       uploadProgressBar: document.getElementById('upload-progress-bar'),
@@ -1235,6 +1263,7 @@
       elements.btnSubmitChecklist.addEventListener('click', handleSubmitChecklist);
       elements.btnRetryUpload.addEventListener('click', handleRetryUpload);
       elements.btnFinish.addEventListener('click', handleFinish);
+      elements.btnFinishEarly.addEventListener('click', handleFinishEarly);
 
       elements.chkItems.forEach(chk => {
         chk.addEventListener('change', checkChecklistValidation);
@@ -1348,6 +1377,13 @@
       elements.btnNextShot.style.display = 'none';
       elements.btnNextShot.disabled = true;
 
+      // 「撮影を終了して送信」ボタンは追加撮影（EXTRA_...）のステップの時のみ表示する
+      if (currentStep.ShotKey.startsWith('EXTRA_')) {
+        elements.btnFinishEarly.style.display = 'inline-flex';
+      } else {
+        elements.btnFinishEarly.style.display = 'none';
+      }
+
       // ガイド表示の更新
       updateGuideDisplay();
     }
@@ -1396,7 +1432,9 @@
 
       const constraints = {
         video: {
-          facingMode: { ideal: "environment" }
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1920 }, // 画質向上のためフルHD解像度を要求
+          height: { ideal: 1080 }
         },
         audio: false
       };
@@ -1460,7 +1498,7 @@
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      state.currentBase64Image = canvas.toDataURL('image/jpeg', 0.9);
+      state.currentBase64Image = canvas.toDataURL('image/jpeg', 0.95);
 
       elements.photoPreview.src = state.currentBase64Image;
       elements.photoPreview.style.display = 'block';
@@ -1522,6 +1560,35 @@
     }
 
     /**
+     * カメラ画面 ➡ 「撮影を終了して送信」ボタンクリック時の処理 (途中終了)
+     */
+    function handleFinishEarly() {
+      if (state.currentStepIndex === 0 && !state.currentBase64Image) {
+        alert("まだ一枚も撮影されていません。最初の項目（コンテナNo.等）を撮影してから終了してください。");
+        return;
+      }
+
+      const confirmed = confirm("撮影を途中で終了し、ここまでに撮影した写真をアップロードしますか？\n（未撮影の項目はスキップされます）");
+      if (confirmed) {
+        stopCamera();
+
+        // 撮影完了した分（現在キャプチャ中ならそれを含める）だけで shotsList を制限
+        let activeShotsCount = state.currentStepIndex;
+        if (state.currentBase64Image) {
+          activeShotsCount++;
+        }
+
+        if (activeShotsCount === 0) {
+          alert("アップロードする写真がありません。");
+          return;
+        }
+
+        state.shotsList = state.shotsList.slice(0, activeShotsCount);
+        startBulkUpload();
+      }
+    }
+
+    /**
      * 次へボタンクリック時の処理
      */
     function handleNextShot() {
@@ -1533,8 +1600,23 @@
         resetChecklistForm();
         showScreen(elements.checklistScreen);
       } else if (state.currentStepIndex === state.shotsList.length - 1) {
-        // すべての写真撮影と確認が完了。一括送信を開始します。
-        startBulkUpload();
+        // すべての写真撮影と確認が完了。追加で撮影する箇所があるか確認
+        const confirmed = confirm("送信する前に他に撮影する箇所はありますか？\n\n（追加で別の角度等の写真を撮影する場合は「はい」を、完了して送信する場合は「いいえ」を押してください）");
+        if (confirmed) {
+          const extraCount = state.shotsList.filter(s => s.ShotKey.startsWith('EXTRA_')).length + 1;
+          const extraStep = {
+            ShotKey: `EXTRA_${extraCount}`,
+            ShotNo: `追加`,
+            ShotName: `追加撮影 ${extraCount}`,
+            Required: false,
+            OverlayType: 'NONE'
+          };
+          state.shotsList.push(extraStep);
+          state.currentStepIndex = state.shotsList.length - 1;
+          loadCurrentStep();
+        } else {
+          startBulkUpload();
+        }
       } else {
         state.currentStepIndex++;
         loadCurrentStep();
@@ -1604,6 +1686,7 @@
       showScreen(elements.uploadScreen);
       elements.uploadErrorContainer.style.display = 'none';
       elements.uploadStatusText.textContent = "端末に保存されたデータを送信しています...";
+      elements.uploadProgressText.textContent = `送信中: 0 / ${state.shotsList.length} 枚`;
       
       const uploadSuccess = await executeBulkUpload();
       
@@ -1722,6 +1805,9 @@
      */
     function handleCompleteJob() {
       toggleLoading(true, "完了状態を確認しています...");
+
+      // 送信完了枚数を動的に反映
+      elements.summaryPhotoCount.textContent = `${state.shotsList.length} / ${state.shotsList.length} 枚`;
 
       callGasApi("completeJob", { jobId: state.jobId })
         .then(response => {
