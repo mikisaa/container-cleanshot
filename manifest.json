@@ -1,0 +1,17 @@
+{
+  "short_name": "CleanShot",
+  "name": "Container CleanShot",
+  "icons": [
+    {
+      "src": "app-icon.jpg",
+      "type": "image/jpeg",
+      "sizes": "1024x1024",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "display": "standalone",
+  "orientation": "portrait"
+}

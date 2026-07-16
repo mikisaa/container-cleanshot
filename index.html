@@ -5,6 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Container CleanShot</title>
+  <!-- PWA Manifest Configuration -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CleanShot">
   <!-- App Icon Configuration -->
   <link rel="icon" type="image/jpeg" href="app-icon.jpg">
   <link rel="apple-touch-icon" href="app-icon.jpg">
@@ -1219,6 +1224,22 @@
       'AFTER_FULL': 'container_images/12_after_full.png'
     };
 
+    // オフラインフォールバック用のデフォルト撮影リスト定義 (新しい順序・名称に準拠)
+    const defaultShotsList = [
+      { ShotKey: "CONTAINER_NO", ShotNo: 10, ShotName: "コンテナNo.", Required: true, OverlayType: "BOX" },
+      { ShotKey: "BEFORE_FULL", ShotNo: 11, ShotName: "清掃前のコンテナ全体", Required: true, OverlayType: "WIDE" },
+      { ShotKey: "BACK_WALL", ShotNo: 1, ShotName: "コンテナ奥の壁", Required: true, OverlayType: "BACK" },
+      { ShotKey: "LEFT_BACK", ShotNo: 2, ShotName: "左壁面・奥半分", Required: true, OverlayType: "LEFT_BACK" },
+      { ShotKey: "RIGHT_BACK", ShotNo: 3, ShotName: "右壁面・奥半分", Required: true, OverlayType: "RIGHT_BACK" },
+      { ShotKey: "CEILING_BACK", ShotNo: 4, ShotName: "天井・奥", Required: true, OverlayType: "CEILING_BACK" },
+      { ShotKey: "FLOOR_BACK", ShotNo: 5, ShotName: "床・奥", Required: true, OverlayType: "FLOOR_BACK" },
+      { ShotKey: "LEFT_FRONT", ShotNo: 6, ShotName: "左壁面・手前半分", Required: true, OverlayType: "LEFT_FRONT" },
+      { ShotKey: "RIGHT_FRONT", ShotNo: 7, ShotName: "右壁面・手前半分", Required: true, OverlayType: "RIGHT_FRONT" },
+      { ShotKey: "CEILING_FRONT", ShotNo: 8, ShotName: "天井・手前", Required: true, OverlayType: "CEILING_FRONT" },
+      { ShotKey: "FLOOR_FRONT", ShotNo: 9, ShotName: "床・手前", Required: true, OverlayType: "FLOOR_FRONT" },
+      { ShotKey: "AFTER_FULL", ShotNo: 12, ShotName: "コンテナ全体", Required: true, OverlayType: "WIDE" }
+    ];
+
     // 画面内のHTML要素への参照一覧
     const elements = {
       // 各画面
@@ -1353,6 +1374,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       setupEventListeners();
       checkUnsentDataOnStartup();
+
+      // Service Worker (PWAオフライン対応) の登録
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker 登録成功:', reg.scope))
+          .catch(err => console.error('Service Worker 登録失敗:', err));
+      }
     });
 
     // イベントリスナーの設定
@@ -1419,6 +1447,33 @@
     }
 
     /**
+     * オフライン撮影モードで新規ジョブを開始します
+     */
+    function startOfflineJob(customMessage) {
+      toggleLoading(false);
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const sec = String(now.getSeconds()).padStart(2, '0');
+      const randomPart = Math.random().toString(36).substring(2, 8);
+      
+      // オフライン用のJobIdを生成
+      state.jobId = `OFFLINE_${yyyy}${mm}${dd}_${hh}${min}${sec}_${randomPart}`;
+      state.shotsList = JSON.parse(JSON.stringify(defaultShotsList)); // ディープコピー
+      state.currentStepIndex = 0;
+
+      if (customMessage) {
+        alert(customMessage);
+      }
+
+      showScreen(elements.cameraScreen);
+      loadCurrentStepWithoutRestartingCamera();
+    }
+
+    /**
      * 1. 開始画面 ➡ 「撮影を開始する」ボタンクリック時の処理
      */
     function handleStartJob() {
@@ -1427,6 +1482,12 @@
       // 1. 同期的にカメラの起動を試みる (iOS Safariのジェスチャー要件回避)
       startCameraPromise()
         .then(() => {
+          // ブラウザのオフライン検出
+          if (!navigator.onLine) {
+            startOfflineJob("ネットワークがオフラインのため、オフライン撮影モードで開始します。\n(撮影された写真は電波が繋がった後に送信できます)");
+            return;
+          }
+
           // カメラが起動できたら、裏でGASサーバーの startJob を呼び出す
           callGasApi("startJob", { userAgent: navigator.userAgent })
             .then(response => {
@@ -1440,8 +1501,14 @@
               loadCurrentStepWithoutRestartingCamera();
             })
             .catch(err => {
-              stopCamera();
-              onApiFailure(err);
+              console.warn("GAS通信失敗、オフラインフォールバックを開始します:", err);
+              const useOffline = confirm("サーバーへの接続に失敗しました（電波状況が悪い可能性があります）。\n\nこのままオフラインモードで撮影を開始しますか？\n(撮影されたデータは端末に保存され、電波が復旧した後に送信できます)");
+              if (useOffline) {
+                startOfflineJob();
+              } else {
+                stopCamera();
+                toggleLoading(false);
+              }
             });
         })
         .catch(err => {
