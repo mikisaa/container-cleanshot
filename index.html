@@ -1530,7 +1530,7 @@
       elements.progressText.textContent = `ステップ ${state.currentStepIndex + 1} / ${state.shotsList.length}`;
 
       // 項目名の表示
-      elements.shotTitle.textContent = `${currentStep.ShotNo} ${currentStep.ShotName}`;
+      elements.shotTitle.textContent = currentStep.ShotName;
 
       // 撮影ステートの初期化
       state.currentBase64Image = null;
