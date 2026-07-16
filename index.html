@@ -198,6 +198,7 @@
     /* Camera Viewport Area */
     .camera-viewport-container {
       width: 100%;
+      max-width: 100%;
       aspect-ratio: 3 / 4;
       background-color: #000;
       border-radius: var(--radius-lg);
@@ -210,12 +211,12 @@
       justify-content: center;
       margin: 0 auto;
       flex-grow: 0;
+      flex-shrink: 0; /* flexレイアウトによる縦潰れを完全に防止 */
       max-height: calc(100vh - 250px);
     }
 
     #camera-stream,
-    .photo-preview,
-    .guide-overlay {
+    .photo-preview {
       position: absolute;
       top: 0;
       left: 0;
@@ -225,6 +226,12 @@
     }
 
     .guide-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill; /* ガイド画像の歪みを防ぎ、3:4コンテナ全体にぴったり合わせる */
       z-index: 3;
       pointer-events: none;
       opacity: 0.35;
@@ -944,18 +951,18 @@
 
     // 各撮影キー（ShotKey）に対応するガイド画像（PNGファイル）の相対パス定義
     const overlayImageMap = {
-      'CONTAINER_NO': 'コンテナ画像/10_コンテナNo.png',
-      'BEFORE_FULL': 'コンテナ画像/11_清掃前_コンテナ全体.png',
-      'BACK_WALL': 'コンテナ画像/01_コンテナ奥の壁.png',
-      'LEFT_BACK': 'コンテナ画像/02_左壁面_奥半分.png',
-      'RIGHT_BACK': 'コンテナ画像/03_右壁面_奥半分.png',
-      'CEILING_BACK': 'コンテナ画像/04_天井_奥.png',
-      'FLOOR_BACK': 'コンテナ画像/05_床_奥.png',
-      'LEFT_FRONT': 'コンテナ画像/06_左壁面_手前半分.png',
-      'RIGHT_FRONT': 'コンテナ画像/07_右壁面_手前半分.png',
-      'CEILING_FRONT': 'コンテナ画像/08_天井_手前.png',
-      'FLOOR_FRONT': 'コンテナ画像/09_床_手前.png',
-      'AFTER_FULL': 'コンテナ画像/12_清掃後_コンテナ全体.png'
+      'CONTAINER_NO': 'container_images/10_container_no.png',
+      'BEFORE_FULL': 'container_images/11_before_full.png',
+      'BACK_WALL': 'container_images/01_back_wall.png',
+      'LEFT_BACK': 'container_images/02_left_back.png',
+      'RIGHT_BACK': 'container_images/03_right_back.png',
+      'CEILING_BACK': 'container_images/04_ceiling_back.png',
+      'FLOOR_BACK': 'container_images/05_floor_back.png',
+      'LEFT_FRONT': 'container_images/06_left_front.png',
+      'RIGHT_FRONT': 'container_images/07_right_front.png',
+      'CEILING_FRONT': 'container_images/08_ceiling_front.png',
+      'FLOOR_FRONT': 'container_images/09_floor_front.png',
+      'AFTER_FULL': 'container_images/12_after_full.png'
     };
 
     // 画面内のHTML要素への参照一覧
