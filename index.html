@@ -139,23 +139,33 @@
       font-weight: 500;
     }
 
-    /* Headers */
+    /* Headers (被り対策として半透明の白背景を適用し、文字をはっきりさせる) */
     .screen-header {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.88); /* 半透明白背景 */
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      z-index: 10;
     }
 
-    .section-title {
+    .section-title,
+    .shot-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      color: #0f172a !important; /* 明るい背景用に黒系の文字色へ */
     }
 
     .section-subtitle {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      line-height: 1.5;
+      font-size: 0.85rem;
+      color: #475569 !important; /* 明るい背景用にダークグレー */
+      line-height: 1.4;
     }
 
     /* Progress bar */
@@ -197,9 +207,9 @@
 
     /* Camera Viewport Area */
     .camera-viewport-container {
-      width: 100%;
-      max-width: 100%;
-      aspect-ratio: 3 / 4;
+      width: auto;
+      height: 100%;
+      aspect-ratio: 9 / 16; /* 9:16の比率に固定 */
       background-color: #000;
       border-radius: var(--radius-lg);
       overflow: hidden;
@@ -212,7 +222,8 @@
       margin: 0 auto;
       flex-grow: 0;
       flex-shrink: 0; /* flexレイアウトによる縦潰れを完全に防止 */
-      max-height: calc(100vh - 250px);
+      max-height: calc(100vh - 210px); /* ヘッダーとボタンが被らないよう制限 */
+      max-width: 100%;
     }
 
     #camera-stream,
@@ -225,22 +236,91 @@
       object-fit: cover;
     }
 
-    .guide-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: fill; /* ガイド画像の歪みを防ぎ、3:4コンテナ全体にぴったり合わせる */
-      z-index: 3;
-      pointer-events: none;
-      opacity: 0.35;
-      transition: opacity 0.3s ease;
-    }
-
     .photo-preview {
       z-index: 2;
       animation: preview-fade-in 0.25s ease-out;
+    }
+
+    /* 右上の不透明なお手本サムネイルガイド */
+    #guide-thumbnail-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 85px; /* スマートな小さめのお手本枠 */
+      aspect-ratio: 9 / 16;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1.5px solid white;
+      border-radius: 6px;
+      overflow: hidden;
+      z-index: 5;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .guide-thumbnail-label {
+      background: white;
+      color: #0f172a;
+      font-size: 0.6rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 1px 0;
+      flex-shrink: 0;
+    }
+
+    .guide-thumbnail {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1; /* 不透明度1 (透明度0%) */
+    }
+
+    /* 黄色のターゲット点滅枠 (コンテナNo.用) */
+    #capture-target-box {
+      position: absolute;
+      /* アスペクト比9:16の中で中央〜右寄りのBOXを定義 (x=55, y=20, w=35, h=60 ) */
+      top: 20%;
+      right: 8%;
+      width: 38%;
+      height: 60%;
+      border: 3px solid #eab308; /* 明るい黄色 */
+      border-radius: 8px;
+      z-index: 4;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .target-box-blink {
+      animation: blink-animation 1.2s infinite alternate;
+    }
+
+    @keyframes blink-animation {
+      0% {
+        opacity: 0.3;
+        border-color: rgba(234, 179, 8, 0.3);
+        box-shadow: none;
+      }
+      100% {
+        opacity: 1;
+        border-color: rgba(234, 179, 8, 1);
+        box-shadow: 0 0 12px rgba(234, 179, 8, 0.6);
+      }
+    }
+
+    .target-label {
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(234, 179, 8, 0.9);
+      color: #0f172a;
+      font-size: 0.65rem;
+      font-weight: bold;
+      white-space: nowrap;
+      padding: 2px 6px;
+      border-radius: 4px;
     }
 
     /* Buttons and Controls */
@@ -746,9 +826,15 @@
         <!-- 撮影後のプレビュー用画像（初期非表示） -->
         <img id="photo-preview" class="photo-preview" src="" alt="プレビュー" style="display: none;">
 
-        <!-- 透過オーバーレイガイド (PNG画像へ差し替え) -->
-        <div id="overlay-container">
-          <img id="camera-guide" class="guide-overlay" src="" alt="ガイド">
+        <!-- 右上のお手本ガイド画像 (不透明度1 = 透明度0%) -->
+        <div id="guide-thumbnail-container" style="display: none;">
+          <div class="guide-thumbnail-label">お手本</div>
+          <img id="camera-guide" class="guide-thumbnail" src="" alt="お手本">
+        </div>
+
+        <!-- 黄色いターゲット枠 (コンテナNo.撮影時のみ表示・点滅) -->
+        <div id="capture-target-box" class="target-box-blink" style="display: none;">
+          <span class="target-label">ここにコンテナNo.を合わせる</span>
         </div>
 
         <!-- ローディングスピナー -->
@@ -992,6 +1078,8 @@
       cameraStream: document.getElementById('camera-stream'),
       photoPreview: document.getElementById('photo-preview'),
       cameraGuide: document.getElementById('camera-guide'),
+      guideThumbnailContainer: document.getElementById('guide-thumbnail-container'),
+      captureTargetBox: document.getElementById('capture-target-box'),
       loadingOverlay: document.getElementById('loading-overlay'),
       loadingMessage: document.getElementById('loading-message'),
       summaryJobId: document.getElementById('summary-job-id'),
@@ -1231,19 +1319,31 @@
     }
 
     /**
-     * ガイドの表示切替処理 (PNG画像を重ねる)
+     * ガイドの表示切替処理 (右上にお手本表示 ＆ 必要ステップで黄色枠を点滅表示)
      */
     function updateGuideDisplay() {
       if (state.shotsList[state.currentStepIndex]) {
         const currentStep = state.shotsList[state.currentStepIndex];
         const imagePath = overlayImageMap[currentStep.ShotKey];
+
+        // 右上のお手本ガイドの表示制御
         if (imagePath) {
           elements.cameraGuide.src = imagePath;
-          elements.cameraGuide.style.display = 'block';
+          elements.guideThumbnailContainer.style.display = 'flex';
         } else {
           elements.cameraGuide.src = '';
-          elements.cameraGuide.style.display = 'none';
+          elements.guideThumbnailContainer.style.display = 'none';
         }
+
+        // 黄色い点滅枠 (コンテナNo. = CONTAINER_NO のときのみ表示)
+        if (currentStep.ShotKey === 'CONTAINER_NO') {
+          elements.captureTargetBox.style.display = 'flex';
+        } else {
+          elements.captureTargetBox.style.display = 'none';
+        }
+      } else {
+        elements.guideThumbnailContainer.style.display = 'none';
+        elements.captureTargetBox.style.display = 'none';
       }
     }
 
