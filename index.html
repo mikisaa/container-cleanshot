@@ -1226,7 +1226,6 @@
 
     // オフラインフォールバック用のデフォルト撮影リスト定義 (新しい順序・名称に準拠)
     const defaultShotsList = [
-      { ShotKey: "CONTAINER_NO", ShotNo: 10, ShotName: "コンテナNo.", Required: true, OverlayType: "BOX" },
       { ShotKey: "BEFORE_FULL", ShotNo: 11, ShotName: "清掃前のコンテナ全体", Required: true, OverlayType: "WIDE" },
       { ShotKey: "BACK_WALL", ShotNo: 1, ShotName: "コンテナ奥の壁", Required: true, OverlayType: "BACK" },
       { ShotKey: "LEFT_BACK", ShotNo: 2, ShotName: "左壁面・奥半分", Required: true, OverlayType: "LEFT_BACK" },
@@ -1237,7 +1236,8 @@
       { ShotKey: "RIGHT_FRONT", ShotNo: 7, ShotName: "右壁面・手前半分", Required: true, OverlayType: "RIGHT_FRONT" },
       { ShotKey: "CEILING_FRONT", ShotNo: 8, ShotName: "天井・手前", Required: true, OverlayType: "CEILING_FRONT" },
       { ShotKey: "FLOOR_FRONT", ShotNo: 9, ShotName: "床・手前", Required: true, OverlayType: "FLOOR_FRONT" },
-      { ShotKey: "AFTER_FULL", ShotNo: 12, ShotName: "コンテナ全体", Required: true, OverlayType: "WIDE" }
+      { ShotKey: "AFTER_FULL", ShotNo: 12, ShotName: "コンテナ全体", Required: true, OverlayType: "WIDE" },
+      { ShotKey: "CONTAINER_NO", ShotNo: 10, ShotName: "コンテナNo.", Required: true, OverlayType: "BOX" }
     ];
 
     // 画面内のHTML要素への参照一覧

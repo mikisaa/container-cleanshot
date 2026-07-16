@@ -26,18 +26,18 @@ function initSpreadsheet() {
   setupSheet(ss, SHEET_NAMES.REQUIRED_SHOTS, [
     "ShotKey", "ShotNo", "ShotName", "SortOrder", "Required", "OverlayType", "Active"
   ], [
-    ["CONTAINER_NO", 10, "コンテナNo.", 1, true, "BOX", true],
-    ["BEFORE_FULL", 11, "清掃前のコンテナ全体", 2, true, "WIDE", true],
-    ["BACK_WALL", 1, "コンテナ奥の壁", 3, true, "BACK", true],
-    ["LEFT_BACK", 2, "左壁面・奥半分", 4, true, "LEFT_BACK", true],
-    ["RIGHT_BACK", 3, "右壁面・奥半分", 5, true, "RIGHT_BACK", true],
-    ["CEILING_BACK", 4, "天井・奥", 6, true, "CEILING_BACK", true],
-    ["FLOOR_BACK", 5, "床・奥", 7, true, "FLOOR_BACK", true],
-    ["LEFT_FRONT", 6, "左壁面・手前半分", 8, true, "LEFT_FRONT", true],
-    ["RIGHT_FRONT", 7, "右壁面・手前半分", 9, true, "RIGHT_FRONT", true],
-    ["CEILING_FRONT", 8, "天井・手前", 10, true, "CEILING_FRONT", true],
-    ["FLOOR_FRONT", 9, "床・手前", 11, true, "FLOOR_FRONT", true],
-    ["AFTER_FULL", 12, "コンテナ全体", 12, true, "WIDE", true]
+    ["BEFORE_FULL", 11, "清掃前のコンテナ全体", 1, true, "WIDE", true],
+    ["BACK_WALL", 1, "コンテナ奥の壁", 2, true, "BACK", true],
+    ["LEFT_BACK", 2, "左壁面・奥半分", 3, true, "LEFT_BACK", true],
+    ["RIGHT_BACK", 3, "右壁面・奥半分", 4, true, "RIGHT_BACK", true],
+    ["CEILING_BACK", 4, "天井・奥", 5, true, "CEILING_BACK", true],
+    ["FLOOR_BACK", 5, "床・奥", 6, true, "FLOOR_BACK", true],
+    ["LEFT_FRONT", 6, "左壁面・手前半分", 7, true, "LEFT_FRONT", true],
+    ["RIGHT_FRONT", 7, "右壁面・手前半分", 8, true, "RIGHT_FRONT", true],
+    ["CEILING_FRONT", 8, "天井・手前", 9, true, "CEILING_FRONT", true],
+    ["FLOOR_FRONT", 9, "床・手前", 10, true, "FLOOR_FRONT", true],
+    ["AFTER_FULL", 12, "コンテナ全体", 11, true, "WIDE", true],
+    ["CONTAINER_NO", 10, "コンテナNo.", 12, true, "BOX", true]
   ]);
 
   // 4. ChecklistMaster シートの作成と初期データ登録
