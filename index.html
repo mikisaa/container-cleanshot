@@ -29,7 +29,7 @@
       --bg-glass: rgba(17, 23, 38, 0.75);
       --border-glass: rgba(255, 255, 255, 0.08);
       --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --text-muted: #cbd5e1;
 
       --accent-color: #6366f1;
       --accent-gradient: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
@@ -156,16 +156,16 @@
 
     .section-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.5rem; /* 見出しサイズを小さく */
+      font-size: 1.9rem;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       color: white;
     }
 
     .section-subtitle {
-      font-size: 0.85rem;
+      font-size: 1.15rem;
       color: var(--text-muted);
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     /* Progress bar */
@@ -333,13 +333,14 @@
       align-items: center;
       justify-content: center;
       font-family: var(--font-family);
-      font-weight: 600;
+      font-weight: 700;
       border: none;
       border-radius: var(--radius-md);
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
+      font-size: 1.25rem;
     }
 
     .btn:active {
@@ -401,20 +402,20 @@
 
     .btn-large {
       width: 100%;
-      padding: 18px 24px;
-      font-size: 1.1rem;
+      padding: 16px 24px;
+      font-size: 1.35rem;
       letter-spacing: 0.02em;
     }
 
     .btn-sm {
-      padding: 8px 16px;
-      font-size: 0.85rem;
+      padding: 10px 20px;
+      font-size: 1.1rem;
       border-radius: 8px;
     }
 
     .btn-icon {
       margin-left: 8px;
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       transition: transform 0.2s ease;
     }
 
@@ -433,26 +434,26 @@
     .btn-home {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       color: white;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .btn-home:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
       color: white;
     }
 
     .home-icon {
-      width: 12px;
-      height: 12px;
+      width: 15px;
+      height: 15px;
     }
 
     /* Camera screen specific controls (絶対配置でカメラの上に重ねる) */
@@ -538,22 +539,23 @@
     #camera-screen .btn-home,
     #camera-screen .btn-finish-early {
       pointer-events: auto;
-      padding: 6px 12px;
-      font-size: 0.8rem;
+      padding: 8px 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
     }
 
     #camera-screen .btn-finish-early {
-      background: rgba(16, 185, 129, 0.2); /* やや緑色のシースルー背景で送信ボタンを強調 */
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.4); /* よりハッキリと送信ボタンを強調 */
+      border: 1px solid rgba(16, 185, 129, 0.75);
     }
 
     #camera-screen .btn-finish-early:hover {
-      background: rgba(16, 185, 129, 0.35);
-      border-color: rgba(16, 185, 129, 0.6);
+      background: rgba(16, 185, 129, 0.55);
+      border-color: rgba(16, 185, 129, 0.9);
     }
 
     #camera-screen .shot-title {
-      font-size: 1.4rem; /* 元の大きめのサイズを維持 */
+      font-size: 2.0rem; /* 大幅に文字サイズをアップ */
       font-weight: 700;
       color: white !important;
       margin-top: 6px;
@@ -561,7 +563,7 @@
     }
 
     #camera-screen .progress-text {
-      font-size: 0.9rem; /* 元の大きめのサイズを維持 */
+      font-size: 1.25rem; /* 大幅に文字サイズをアップ */
       color: rgba(255, 255, 255, 0.95) !important;
       font-weight: 600;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
@@ -607,25 +609,28 @@
     }
 
     #checklist-screen .checklist-label {
-      font-size: 0.95rem;
+      font-size: 1.35rem; /* 高齢者向けにかなり大きく */
+      font-weight: 600;
     }
 
     #checklist-screen .checkbox-custom {
-      height: 24px;
-      width: 24px;
-      margin-right: 12px;
-      border-radius: 6px;
+      height: 34px; /* チェックボックスを大型化して押しやすく */
+      width: 34px;
+      margin-right: 16px;
+      border-radius: 8px;
     }
 
     #checklist-screen .checkbox-custom::after {
-      width: 5px;
-      height: 10px;
-      border-width: 0 2px 2px 0;
+      width: 8px;
+      height: 16px;
+      border-width: 0 4px 4px 0;
+      left: 12px;
+      top: 5px;
     }
 
     #checklist-screen .action-section {
-      padding: 8px 0;
-      gap: 8px;
+      padding: 10px 0;
+      gap: 10px;
     }
 
     /* 撮影完了画面専用：1画面に収めるためのスリム化調整 */
@@ -934,6 +939,51 @@
         opacity: 1;
       }
     }
+
+    /* Unsent offline data recovery styles (オレンジ系のハッキリしたコントラスト) */
+    .unsent-card {
+      background: rgba(217, 119, 6, 0.15);
+      border: 3px solid #d97706;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      width: 100%;
+    }
+
+    .unsent-badge {
+      display: inline-block;
+      background-color: #d97706;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .unsent-text {
+      font-size: 1.35rem;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .btn-danger-link {
+      background: none;
+      border: none;
+      text-decoration: underline;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f87171;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    
+    .btn-danger-link:active {
+      opacity: 0.7;
+    }
   </style>
 </head>
 
@@ -947,13 +997,33 @@
           <img src="app-icon.jpg" alt="App Logo" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <h1 class="app-title">Container CleanShot</h1>
-        <p class="app-subtitle">コンテナ清掃・写真撮影ガイド</p>
+        <p class="app-subtitle">コンテナ清掃の撮影</p>
       </div>
       <div class="action-section">
-        <button id="btn-start" class="btn btn-primary btn-large">
-          撮影を開始する
-          <span class="btn-icon">→</span>
-        </button>
+        <!-- 通常の撮影開始ボタン -->
+        <div id="normal-start-container">
+          <button id="btn-start" class="btn btn-primary btn-large" style="width: 100%;">
+            撮影を開始する
+            <span class="btn-icon">→</span>
+          </button>
+        </div>
+
+        <!-- 未送信データのアップロードエリア（未送信データがあるときだけJSで表示） -->
+        <div id="unsent-container" class="unsent-card" style="display: none; margin-top: 16px; text-align: center;">
+          <div class="unsent-badge">⚠️ 送れていない写真があります</div>
+          <p id="unsent-message" class="unsent-text">
+            送信できていない写真が<br>
+            <strong id="unsent-count" style="font-size: 2.2rem; color: #ffeb3b; display: block; margin: 8px 0;">0</strong>
+            枚残っています。
+          </p>
+          <button id="btn-upload-unsent" class="btn btn-warning btn-large" style="width: 100%; margin-bottom: 12px; background: #d97706; color: white;">
+            今すぐ送信する
+            <span class="btn-icon">↑</span>
+          </button>
+          <button id="btn-clear-unsent" class="btn-danger-link">
+            この写真を消して新しく撮影する
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1038,7 +1108,7 @@
           </button>
         </div>
         <h2 class="section-title">清掃確認</h2>
-        <p class="section-subtitle">以下の項目をすべて確認し、チェックを入れてください。</p>
+        <p class="section-subtitle">すべて確認し、チェックを入れてください</p>
       </div>
 
       <div class="checklist-container">
@@ -1080,8 +1150,8 @@
         <div class="success-icon-container upload-spinner-container">
           <div class="spinner"></div>
         </div>
-        <h1 class="app-title">データを送信中</h1>
-        <p class="app-subtitle" id="upload-status-text">端末に保存されたデータを送信しています...</p>
+        <h1 class="app-title">写真を送信しています</h1>
+        <p class="app-subtitle" id="upload-status-text">このまま少しお待ちください。</p>
       </div>
 
       <div class="job-summary-card">
@@ -1089,13 +1159,13 @@
           <div class="progress-bar-bg">
             <div id="upload-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
           </div>
-          <div id="upload-progress-text" class="progress-text" style="margin-top: 8px;">送信中: 0 / -- 枚</div>
+          <div id="upload-progress-text" class="progress-text" style="margin-top: 8px; font-size: 1.15rem; font-weight: 700; color: white;">送信中: 0 / -- 枚</div>
         </div>
 
         <!-- オフライン・通信切断時の安心ガイダンス -->
-        <div style="margin-top: 16px; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-muted); text-align: left; line-height: 1.4;">
-          💡 <strong>電波が途切れてもデータは消えません</strong><br>
-          送信が完全に完了するまで、写真は端末内部に安全に保存されます。通信エラーが発生した場合は、電波の良い場所に移動して「再試行する」を押してください。
+        <div style="margin-top: 16px; padding: 12px; background: rgba(255, 255, 255, 0.05); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--text-muted); text-align: left; line-height: 1.45;">
+          💡 <strong>電波が切れても写真は消えません</strong><br>
+          電波の良い場所に移動して「再試行する」を押してください。
         </div>
 
         <div id="upload-error-container" style="display: none; text-align: center; margin-top: 16px;">
@@ -1260,6 +1330,11 @@
       btnRetryUpload: document.getElementById('btn-retry-upload'),
       btnFinish: document.getElementById('btn-finish'),
       btnFinishEarly: document.getElementById('btn-finish-early'),
+      btnUploadUnsent: document.getElementById('btn-upload-unsent'),
+      btnClearUnsent: document.getElementById('btn-clear-unsent'),
+      unsentContainer: document.getElementById('unsent-container'),
+      unsentCount: document.getElementById('unsent-count'),
+      normalStartContainer: document.getElementById('normal-start-container'),
 
       // 動的表示領域
       progressBarFill: document.getElementById('progress-bar-fill'),
@@ -1370,6 +1445,29 @@
       });
     }
 
+    async function localClearJob(jobId) {
+      if (!jobId) return;
+      const db = await initDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        const request = store.openCursor();
+        request.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor) {
+            // キー名が jobId で始まるレコードのみを削除（メタデータおよび写真）
+            if (cursor.key.startsWith(`${jobId}_`)) {
+              store.delete(cursor.key);
+            }
+            cursor.continue();
+          } else {
+            resolve();
+          }
+        };
+        request.onerror = (e) => reject(tx.error);
+      });
+    }
+
     // アプリ起動時の初期化処理
     document.addEventListener('DOMContentLoaded', () => {
       setupEventListeners();
@@ -1396,6 +1494,10 @@
       elements.btnFinish.addEventListener('click', handleFinish);
       elements.btnFinishEarly.addEventListener('click', handleFinishEarly);
 
+      // オフライン未送信データアップロード用のイベント
+      elements.btnUploadUnsent.addEventListener('click', handleUploadUnsent);
+      elements.btnClearUnsent.addEventListener('click', handleClearUnsent);
+
       elements.chkItems.forEach(chk => {
         chk.addEventListener('change', checkChecklistValidation);
       });
@@ -1415,12 +1517,12 @@
      * 途中で最初から（ホーム）に戻るアクション
      */
     async function handleHomeNavigation() {
-      const confirmed = confirm("本当に最初の画面に戻りますか？\n現在撮影されたデータやチェックリストはすべて消去されます。");
+      const confirmed = confirm("本当に最初に戻りますか？\n今撮影した写真はすべて消えます。");
       if (confirmed) {
         stopCamera();
         toggleLoading(true, "リセット中...");
         try {
-          await localClearDb();
+          await localClearJob(state.jobId);
         } catch (err) {
           console.error("DBクリアに失敗: ", err);
         }
@@ -1430,6 +1532,10 @@
         state.shotsList = [];
         state.currentBase64Image = null;
         state.checklistData = null;
+        
+        // 開始画面の表示状態を再評価
+        await checkUnsentDataOnStartup();
+        
         showScreen(elements.startScreen);
       }
     }
@@ -1850,107 +1956,120 @@
     // ----------------------------------------------------
 
     /**
-     * 一括アップロードプロセスを開始します
+     * 一括アップロードプロセスを開始します (複数ジョブ対応)
      */
     async function startBulkUpload() {
       showScreen(elements.uploadScreen);
       elements.uploadErrorContainer.style.display = 'none';
       elements.uploadStatusText.textContent = "端末に保存されたデータを送信しています...";
-      elements.uploadProgressText.textContent = `送信中: 0 / ${state.shotsList.length} 枚`;
       
-      const uploadSuccess = await executeBulkUpload();
-      
-      if (uploadSuccess) {
-        handleCompleteJob();
-      }
-    }
-
-    /**
-     * IndexedDBのデータを順番にGASにアップロードします
-     * @return {Promise<boolean>} すべてのデータが正常にアップロードできたか
-     */
-    async function executeBulkUpload() {
       try {
-        // 1. メタデータ（チェックリスト情報など）の取得
-        const metadataKey = `${state.jobId}_metadata`;
-        let metadata = await localGetPhoto(metadataKey);
+        const photos = await localGetAllPhotos();
+        const keys = Object.keys(photos);
         
-        // メタデータがローカルにない場合のフォールバック（メモリ状態から再構成）
-        if (!metadata) {
-          metadata = {
-            jobId: state.jobId,
-            checklistData: state.checklistData,
-            shotsList: state.shotsList,
-            userAgent: navigator.userAgent
-          };
-          await localSavePhoto(metadataKey, metadata);
-        }
-
-        // 2. チェックリストの送信（まだ送信されていない場合）
-        if (metadata.checklistData) {
-          elements.uploadStatusText.textContent = "チェックリストを送信しています...";
-          elements.uploadProgressBar.style.width = "5%";
-          elements.uploadProgressText.textContent = "送信中...";
-          
-          await callGasApi("saveChecklist", {
-            jobId: metadata.jobId,
-            checklistItems: metadata.checklistData
-          });
-          
-          // チェックリスト送信成功したら、メタデータのchecklistData部分をクリアしてIndexedDBを更新
-          metadata.checklistData = null;
-          await localSavePhoto(metadataKey, metadata);
-        }
-
-        // 3. 各写真の送信
-        const allPhotosKey = state.shotsList.map(shot => `${state.jobId}_photo_${shot.ShotKey}`);
-        const totalPhotos = allPhotosKey.length;
-        let successCount = 0;
-
-        // すでに前回の試行で送信に成功している分をチェックしてカウンタ初期化
-        for (let i = 0; i < totalPhotos; i++) {
-          const key = allPhotosKey[i];
-          const photoData = await localGetPhoto(key);
-          if (!photoData) {
-            successCount++; // すでにローカルから削除されている＝送信成功済み
+        // すべてのメタデータキーを抽出
+        const metadataKeys = keys.filter(k => k.endsWith("_metadata"));
+        
+        // 現在のメモリ状態にある最新データがメタデータとしてまだ保存されていなければ追加する（フォールバック）
+        if (state.jobId) {
+          const currentMetaKey = `${state.jobId}_metadata`;
+          if (!metadataKeys.includes(currentMetaKey) && state.shotsList.length > 0) {
+            const currentMetadata = {
+              jobId: state.jobId,
+              checklistData: state.checklistData,
+              shotsList: state.shotsList,
+              userAgent: navigator.userAgent
+            };
+            await localSavePhoto(currentMetaKey, currentMetadata);
+            // 処理対象に追加
+            photos[currentMetaKey] = currentMetadata;
+            if (!metadataKeys.includes(currentMetaKey)) {
+              metadataKeys.push(currentMetaKey);
+            }
           }
         }
+        
+        if (metadataKeys.length === 0) {
+          // 送信するデータが何も残っていない場合はそのまま完了にする
+          elements.uploadProgressBar.style.width = "100%";
+          elements.uploadProgressText.textContent = "送信完了: 0 / 0 枚";
+          setTimeout(() => {
+            elements.summaryJobId.textContent = state.jobId || "なし";
+            elements.summaryPhotoCount.textContent = "0 / 0 枚";
+            showScreen(elements.completeScreen);
+          }, 800);
+          return;
+        }
+
+        // 送信対象の写真キーをすべて抽出 (メタデータを除く)
+        const photoKeys = Object.keys(photos).filter(k => !k.endsWith("_metadata"));
+        const totalPhotos = photoKeys.length;
+        let successCount = 0;
 
         updateUploadProgress(successCount, totalPhotos);
 
-        // 写真を1枚ずつ順番に送信
-        for (let i = 0; i < totalPhotos; i++) {
-          const key = allPhotosKey[i];
-          const currentShot = state.shotsList[i];
-          const photoData = await localGetPhoto(key);
-          
-          if (photoData) {
-            elements.uploadStatusText.textContent = `写真を送信しています: ${currentShot.ShotName}`;
-            
-            // GAS API の呼び出し
-            await callGasApi("savePhoto", {
-              jobId: photoData.jobId,
-              shotKey: photoData.shotKey,
-              base64Image: photoData.base64Image
-            });
+        // 各ジョブごとに順番に処理
+        for (const metaKey of metadataKeys) {
+          const metadata = photos[metaKey];
+          const jobId = metadata.jobId;
 
-            // 送信完了したらIndexedDBから該当写真を削除
-            await localDeletePhoto(key);
-            successCount++;
-            updateUploadProgress(successCount, totalPhotos);
+          // 1. チェックリストの送信 (まだ送信されていない場合)
+          if (metadata.checklistData) {
+            elements.uploadStatusText.textContent = "チェックリストを送信しています...";
+            await callGasApi("saveChecklist", {
+              jobId: jobId,
+              checklistItems: metadata.checklistData
+            });
+            // 送信完了したら、メタデータのchecklistData部分をクリアしてIndexedDBを更新
+            metadata.checklistData = null;
+            await localSavePhoto(metaKey, metadata);
           }
+
+          // 2. このジョブに紐づく写真を順番に送信
+          const jobShots = metadata.shotsList || [];
+          for (const shot of jobShots) {
+            const photoKey = `${jobId}_photo_${shot.ShotKey}`;
+            const photoData = await localGetPhoto(photoKey);
+
+            if (photoData) {
+              elements.uploadStatusText.textContent = `写真を送信しています: ${shot.ShotName}`;
+              
+              await callGasApi("savePhoto", {
+                jobId: jobId,
+                shotKey: shot.ShotKey,
+                base64Image: photoData.base64Image
+              });
+
+              // 送信完了したらIndexedDBから該当写真を削除
+              await localDeletePhoto(photoKey);
+              successCount++;
+              updateUploadProgress(successCount, totalPhotos);
+            }
+          }
+
+          // 3. ジョブ完了の確認処理
+          elements.uploadStatusText.textContent = "送信完了の確認処理を行っています...";
+          try {
+            await callGasApi("completeJob", { jobId: jobId });
+          } catch (completeErr) {
+            console.error("完了確認処理失敗: ", completeErr);
+            // 完了通知のみ失敗した場合は警告を出すだけで次に進む
+          }
+
+          // 4. メタデータもクリア
+          await localDeletePhoto(metaKey);
         }
 
-        // すべて送信に成功したらメタデータもクリア
-        await localDeletePhoto(metadataKey);
-        return true;
+        // すべて送信に成功したら完了画面を表示
+        elements.summaryJobId.textContent = state.jobId || "一括送信";
+        elements.summaryPhotoCount.textContent = `${totalPhotos} / ${totalPhotos} 枚`;
+        showScreen(elements.completeScreen);
 
       } catch (err) {
         console.error("アップロード失敗: ", err);
         elements.uploadStatusText.textContent = "通信エラーが発生しました";
         elements.uploadErrorMessage.textContent = "送信中にエラーが発生しました。電波の良い場所へ移動し、再試行ボタンを押してください。\n\n[詳細]: " + err.message;
         elements.uploadErrorContainer.style.display = 'block';
-        return false;
       }
     }
 
@@ -1970,29 +2089,7 @@
       startBulkUpload();
     }
 
-    /**
-     * ジョブ全体の完了処理判定の要求
-     */
-    function handleCompleteJob() {
-      toggleLoading(true, "完了状態を確認しています...");
 
-      // 送信完了枚数を動的に反映
-      elements.summaryPhotoCount.textContent = `${state.shotsList.length} / ${state.shotsList.length} 枚`;
-
-      callGasApi("completeJob", { jobId: state.jobId })
-        .then(response => {
-          toggleLoading(false);
-          elements.summaryJobId.textContent = state.jobId;
-          showScreen(elements.completeScreen);
-        })
-        .catch(err => {
-          toggleLoading(false);
-          // 送信自体はすべて完了しているため、完了確認APIだけ失敗した場合は警告を出しつつ完了とする
-          alert("すべての写真は正常に送信されましたが、完了の確認処理で通信エラーが発生しました。スプレッドシートをご確認ください。\n\n詳細: " + err.message);
-          elements.summaryJobId.textContent = state.jobId;
-          showScreen(elements.completeScreen);
-        });
-    }
 
     /**
      * 完了画面から「最初の画面に戻る」ボタンクリック時の処理
@@ -2000,7 +2097,7 @@
     async function handleFinish() {
       toggleLoading(true, "データをクリアしています...");
       try {
-        await localClearDb();
+        await localClearJob(state.jobId);
       } catch (err) {
         console.error("DBクリアエラー: ", err);
       }
@@ -2013,40 +2110,79 @@
       state.checklistData = null;
       stopCamera();
 
+      // 開始画面の表示状態を再評価
+      await checkUnsentDataOnStartup();
+
       showScreen(elements.startScreen);
     }
 
     /**
-     * アプリ起動時に未送信データが残っているか確認し、あれば復旧を提案する
+     * アプリ起動時に未送信データが残っているか確認し、あればホーム画面の回復パネルを構成する
      */
     async function checkUnsentDataOnStartup() {
       try {
         const photos = await localGetAllPhotos();
         const keys = Object.keys(photos);
         
-        // メタデータキーを探す
-        const metadataKey = keys.find(k => k.endsWith("_metadata"));
+        // すべてのメタデータキーを探す
+        const metadataKeys = keys.filter(k => k.endsWith("_metadata"));
         
-        if (metadataKey && keys.length > 1) {
-          const metadata = photos[metadataKey];
-          const confirmed = confirm(`前回の未送信データが端末に残っています。\n作業ID: ${metadata.jobId}\n\n送信を再開（アップロード）しますか？\n\n※「キャンセル」を押すと前回の撮影データは削除されます。`);
+        if (metadataKeys.length > 0) {
+          // 複数のメタデータが存在する場合に対応し、実在する写真の総数をカウント
+          const unsentPhotosCount = keys.length - metadataKeys.length;
           
-          if (confirmed) {
-            state.jobId = metadata.jobId;
-            state.shotsList = metadata.shotsList;
-            state.checklistData = metadata.checklistData;
-            
-            // 一括送信画面に遷移して再開
-            startBulkUpload();
+          if (unsentPhotosCount > 0) {
+            // 件数をUIに反映し、未送信カードを表示
+            elements.unsentCount.textContent = unsentPhotosCount;
+            elements.unsentContainer.style.display = 'block';
           } else {
+            elements.unsentContainer.style.display = 'none';
+          }
+        } else {
+          elements.unsentContainer.style.display = 'none';
+          
+          if (keys.length > 0) {
+            // 不完全な一時写真データのみの場合はクリーンアップ
             await localClearDb();
           }
-        } else if (keys.length > 0) {
-          // 不完全な一時写真データのみの場合はクリーンアップ
-          await localClearDb();
         }
+        
+        // 未送信データがあっても、常に新しく撮影を開始できるように表示
+        elements.normalStartContainer.style.display = 'block';
       } catch (err) {
         console.error("未送信データチェック中にエラーが発生しました: ", err);
+      }
+    }
+
+    /**
+     * ホーム画面の「今すぐ送信する」ボタンクリック時の処理
+     */
+    function handleUploadUnsent() {
+      startBulkUpload();
+    }
+
+    /**
+     * ホーム画面の「この写真を消して新しく撮影する」ボタンクリック時の処理
+     */
+    async function handleClearUnsent() {
+      const confirmed = confirm("本当に残っている写真を消して、新しく撮影を始めますか？\n\n※消去した写真は元に戻せません。");
+      if (confirmed) {
+        toggleLoading(true, "データをクリアしています...");
+        try {
+          await localClearDb();
+          state.jobId = null;
+          state.currentStepIndex = 0;
+          state.shotsList = [];
+          state.currentBase64Image = null;
+          state.checklistData = null;
+          
+          // ホーム画面の表示状態をリセット
+          elements.unsentContainer.style.display = 'none';
+          elements.normalStartContainer.style.display = 'block';
+        } catch (err) {
+          console.error("DBクリアエラー: ", err);
+        }
+        toggleLoading(false);
       }
     }
 
