@@ -219,12 +219,16 @@
 
     #camera-stream,
     .photo-preview {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover; /* アスペクト比を維持しつつ画面全体を覆う */
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-width: 100% !important;
+      min-height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+      object-fit: fill !important; /* 画面全体に完全に引き伸ばす */
     }
 
     .photo-preview {
@@ -234,15 +238,19 @@
 
     /* 画面全体に被せる半透明お手本ガイド画像 */
     .camera-guide {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover; /* カメラ映像と同じカバー配置 */
-      opacity: 0.35;     /* 35%の半透明で重ね合わせる */
-      z-index: 2;        /* video(z-index:1)の上、プレビューの下 */
-      pointer-events: none; /* タップ操作を透過 */
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-width: 100% !important;
+      min-height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+      object-fit: fill !important;  /* カメラ映像と同じ全画面フィット */
+      opacity: 0.35 !important;     /* 35%の半透明で重ね合わせる */
+      z-index: 2 !important;        /* video(z-index:1)の上、プレビューの下 */
+      pointer-events: none !important; /* タップ操作を透過 */
     }
 
     /* 黄色のターゲット点滅枠 (コンテナNo.用) */
