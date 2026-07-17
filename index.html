@@ -156,8 +156,8 @@
 
     .section-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.9rem;
-      font-weight: 700;
+      font-size: 2.2rem;
+      font-weight: 800;
       margin-bottom: 8px;
       color: white;
     }
@@ -232,43 +232,17 @@
       animation: preview-fade-in 0.25s ease-out;
     }
 
-    /* 左下の不透明なお手本サムネイルガイド */
-    #guide-thumbnail-container {
+    /* 画面全体に被せる半透明お手本ガイド画像 */
+    .camera-guide {
       position: absolute;
-      bottom: 16px;
-      left: 16px;
-      width: 105px; /* 大きく表示 */
-      aspect-ratio: 3 / 4; /* お手本画像本来の比率(3:4)に合わせて見切れを防ぐ */
-      background: rgba(9, 13, 22, 0.85);
-      border: none; /* 画像内への食い込みを防ぐため内枠を削除 */
-      outline: 1.5px solid rgba(255, 255, 255, 0.85); /* 枠線を画像の外側に配置 */
-      outline-offset: 1px;
-      margin: 1px;
-      border-radius: 3px;
-      overflow: hidden;
-      z-index: 15; /* コントロールやボタンより前面に表示 */
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-      display: flex;
-      flex-direction: column;
-      pointer-events: auto;
-    }
-
-    .guide-thumbnail-label {
-      background: rgba(9, 13, 22, 0.7); /* 白背景から透明な黒に変更して白枠を極小化 */
-      color: white;
-      font-size: 0.55rem;
-      font-weight: bold;
-      text-align: center;
-      padding: 2px 0;
-      flex-shrink: 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .guide-thumbnail {
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      opacity: 1; /* 不透明度1 (透明度0%) */
+      object-fit: cover; /* カメラ映像と同じカバー配置 */
+      opacity: 0.35;     /* 35%の半透明で重ね合わせる */
+      z-index: 2;        /* video(z-index:1)の上、プレビューの下 */
+      pointer-events: none; /* タップ操作を透過 */
     }
 
     /* 黄色のターゲット点滅枠 (コンテナNo.用) */
@@ -555,18 +529,18 @@
     }
 
     #camera-screen .shot-title {
-      font-size: 2.0rem; /* 大幅に文字サイズをアップ */
+      font-size: 2.5rem; /* さらにお手本と被っても見えるように大きく */
       font-weight: 700;
       color: white !important;
       margin-top: 6px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); /* テキストの影でさらに見やすく */
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(0, 0, 0, 0.95); /* 影をより濃くクッキリ */
     }
 
     #camera-screen .progress-text {
-      font-size: 1.25rem; /* 大幅に文字サイズをアップ */
+      font-size: 1.45rem; /* さらにお手本と被っても見えるように大きく */
       color: rgba(255, 255, 255, 0.95) !important;
       font-weight: 600;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      text-shadow: 0 1px 5px rgba(0, 0, 0, 0.95);
     }
 
     #camera-screen .progress-bar-bg {
@@ -595,37 +569,37 @@
     /* 清掃確認画面専用：1画面に収めるためのスリム化調整 */
     #checklist-screen {
       overflow: hidden !important;
-      padding-top: 16px;
-      padding-bottom: 16px;
+      padding-top: 12px;
+      padding-bottom: 12px;
     }
 
     #checklist-screen .screen-header {
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     #checklist-screen .checklist-card {
-      padding: 16px;
-      gap: 14px;
+      padding: 12px 16px;
+      gap: 10px; /* 余白を詰めてスクロールを防止 */
     }
 
     #checklist-screen .checklist-label {
-      font-size: 1.35rem; /* 高齢者向けにかなり大きく */
-      font-weight: 600;
+      font-size: 1.65rem; /* さらにもっと大きく */
+      font-weight: 700;
     }
 
     #checklist-screen .checkbox-custom {
-      height: 34px; /* チェックボックスを大型化して押しやすく */
-      width: 34px;
+      height: 44px; /* さらに超巨大化して押しやすく */
+      width: 44px;
       margin-right: 16px;
       border-radius: 8px;
     }
 
     #checklist-screen .checkbox-custom::after {
-      width: 8px;
-      height: 16px;
-      border-width: 0 4px 4px 0;
-      left: 12px;
-      top: 5px;
+      width: 12px;
+      height: 22px;
+      border-width: 0 5px 5px 0;
+      left: 15px;
+      top: 6px;
     }
 
     #checklist-screen .action-section {
@@ -1064,11 +1038,8 @@
         <!-- 撮影後のプレビュー用画像（初期非表示） -->
         <img id="photo-preview" class="photo-preview" src="" alt="プレビュー" style="display: none;">
 
-        <!-- 右上のお手本ガイド画像 (不透明度1 = 透明度0%) -->
-        <div id="guide-thumbnail-container" style="display: none;">
-          <div class="guide-thumbnail-label">お手本</div>
-          <img id="camera-guide" class="guide-thumbnail" src="" alt="お手本">
-        </div>
+        <!-- 画面全体にオーバーレイ表示されるお手本ガイド画像 (半透明) -->
+        <img id="camera-guide" class="camera-guide" src="" alt="お手本ガイド" style="display: none;">
 
         <!-- 黄色いターゲット枠 (コンテナNo.撮影時のみ表示・点滅) -->
         <div id="capture-target-box" class="target-box-blink" style="display: none;">
@@ -1672,20 +1643,20 @@
     }
 
     /**
-     * ガイドの表示切替処理 (右上にお手本表示 ＆ 必要ステップで黄色枠を点滅表示)
+     * ガイドの表示切替処理 (全画面にお手本表示 ＆ 必要ステップで黄色枠を点滅表示)
      */
     function updateGuideDisplay() {
       if (state.shotsList[state.currentStepIndex]) {
         const currentStep = state.shotsList[state.currentStepIndex];
         const imagePath = overlayImageMap[currentStep.ShotKey];
 
-        // 右上のお手本ガイドの表示制御
+        // 全画面ガイドの表示制御
         if (imagePath) {
           elements.cameraGuide.src = imagePath;
-          elements.guideThumbnailContainer.style.display = 'flex';
+          elements.cameraGuide.style.display = 'block';
         } else {
           elements.cameraGuide.src = '';
-          elements.guideThumbnailContainer.style.display = 'none';
+          elements.cameraGuide.style.display = 'none';
         }
 
         // 黄色い点滅枠 (コンテナNo. = CONTAINER_NO のときのみ表示)
@@ -1695,7 +1666,7 @@
           elements.captureTargetBox.style.display = 'none';
         }
       } else {
-        elements.guideThumbnailContainer.style.display = 'none';
+        if (elements.cameraGuide) elements.cameraGuide.style.display = 'none';
         elements.captureTargetBox.style.display = 'none';
       }
     }
@@ -1781,6 +1752,9 @@
       elements.photoPreview.src = state.currentBase64Image;
       elements.photoPreview.style.display = 'block';
       video.style.display = 'none';
+      
+      // 撮影後のプレビューでは全画面ガイド画像を非表示にする
+      elements.cameraGuide.style.display = 'none';
 
       elements.btnCapture.style.display = 'none';
       elements.btnRetake.style.display = 'inline-flex';

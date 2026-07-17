@@ -1,4 +1,4 @@
-const CACHE_NAME = 'container-cleanshot-v8';
+const CACHE_NAME = 'container-cleanshot-v9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
