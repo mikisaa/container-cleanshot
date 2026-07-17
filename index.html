@@ -2167,29 +2167,24 @@
      * ホーム画面の「この写真を消して新しく撮影する」ボタンクリック時の処理
      */
     async function handleClearUnsent() {
-      // 1回目の確認
-      const firstConfirm = confirm("【注意】本当に残っている写真を消して、新しく撮影を始めますか？\n\n送れていない写真はすべて消えてしまいます。");
-      if (firstConfirm) {
-        // 2回目の確認 (誤タップ防止のための強い警告)
-        const secondConfirm = confirm("本当に写真をすべて消してよろしいですか？\n消した写真は２度と元に戻せません！");
-        if (secondConfirm) {
-          toggleLoading(true, "データをクリアしています...");
-          try {
-            await localClearDb();
-            state.jobId = null;
-            state.currentStepIndex = 0;
-            state.shotsList = [];
-            state.currentBase64Image = null;
-            state.checklistData = null;
-            
-            // ホーム画面の表示状態をリセット
-            elements.unsentContainer.style.display = 'none';
-            elements.normalStartContainer.style.display = 'block';
-          } catch (err) {
-            console.error("DBクリアエラー: ", err);
-          }
-          toggleLoading(false);
+      const confirmed = confirm("本当に写真をすべて消してよろしいですか？");
+      if (confirmed) {
+        toggleLoading(true, "データをクリアしています...");
+        try {
+          await localClearDb();
+          state.jobId = null;
+          state.currentStepIndex = 0;
+          state.shotsList = [];
+          state.currentBase64Image = null;
+          state.checklistData = null;
+          
+          // ホーム画面の表示状態をリセット
+          elements.unsentContainer.style.display = 'none';
+          elements.normalStartContainer.style.display = 'block';
+        } catch (err) {
+          console.error("DBクリアエラー: ", err);
         }
+        toggleLoading(false);
       }
     }
 
