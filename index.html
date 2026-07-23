@@ -320,7 +320,7 @@
     #guide-thumbnail {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     .guide-thumbnail-label {
@@ -1736,17 +1736,15 @@
           thumbnailContainer.style.display = 'none';
         }
 
-        // 3. 黄色い点滅枠 (コンテナNo. = CONTAINER_NO のときのみ表示)
-        if (currentStep.ShotKey === 'CONTAINER_NO') {
-          elements.captureTargetBox.style.display = 'flex';
-        } else {
+        // 3. 黄色い点滅枠 (ご要望により削除・非表示)
+        if (elements.captureTargetBox) {
           elements.captureTargetBox.style.display = 'none';
         }
       } else {
         if (elements.cameraGuide) elements.cameraGuide.style.display = 'none';
         const thumbnailContainer = document.getElementById('guide-thumbnail-container');
         if (thumbnailContainer) thumbnailContainer.style.display = 'none';
-        elements.captureTargetBox.style.display = 'none';
+        if (elements.captureTargetBox) elements.captureTargetBox.style.display = 'none';
       }
     }
 
