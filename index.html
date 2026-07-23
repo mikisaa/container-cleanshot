@@ -301,6 +301,42 @@
       border-radius: 4px;
     }
 
+    /* 左下お手本 (全体像) サムネイル表示エリア */
+    #guide-thumbnail-container {
+      position: absolute;
+      left: 16px;
+      bottom: 90px;
+      width: 105px;
+      aspect-ratio: 3 / 4;
+      z-index: 5;
+      border-radius: 8px;
+      overflow: hidden;
+      outline: 1px solid white;
+      outline-offset: -1px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      background-color: #000;
+    }
+
+    #guide-thumbnail {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .guide-thumbnail-label {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(9, 13, 22, 0.75);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
     /* Buttons and Controls */
     .action-section {
       padding: 16px 0;
@@ -968,140 +1004,6 @@
       color: rgba(248, 113, 113, 1);
       opacity: 0.9;
     }
-
-    /* お手本サムネイル表示 */
-    .sample-thumbnail-container {
-      position: absolute;
-      bottom: 110px;
-      left: 16px;
-      width: 85px;
-      height: 115px;
-      background-color: rgba(9, 13, 22, 0.65);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      border-radius: var(--radius-md);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      z-index: 5;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-      pointer-events: auto; /* タップ可能 */
-      transition: transform 0.2s ease, border-color 0.2s ease;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-
-    .sample-thumbnail-container:active {
-      transform: scale(0.92);
-      border-color: var(--accent-color);
-    }
-
-    .sample-thumbnail-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .sample-thumbnail-container .thumbnail-label {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      color: #fff;
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 2px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      letter-spacing: 0.05em;
-    }
-
-    /* お手本拡大ポップアップモーダル */
-    .sample-popup-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(9, 13, 22, 0.95);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.25s ease-in-out;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .sample-popup-modal.active {
-      display: flex;
-      opacity: 1;
-    }
-
-    .sample-popup-content {
-      position: relative;
-      max-width: 90%;
-      max-height: 80%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      animation: modal-zoom-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes modal-zoom-in {
-      from {
-        transform: scale(0.85);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .sample-popup-image {
-      width: 100%;
-      height: auto;
-      max-height: 70vh;
-      object-fit: contain;
-      border-radius: var(--radius-lg);
-      border: 3px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-    }
-
-    .sample-popup-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #fff;
-      text-align: center;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-
-    .sample-popup-close-btn {
-      position: absolute;
-      top: -45px;
-      right: 0;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: white;
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-circle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.2rem;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-
-    .sample-popup-close-btn:active {
-      background: rgba(255, 255, 255, 0.3);
-    }
   </style>
 </head>
 
@@ -1183,15 +1085,15 @@
         <!-- 画面全体にオーバーレイ表示されるお手本ガイド画像 (半透明) -->
         <img id="camera-guide" class="camera-guide" src="" alt="お手本ガイド" style="display: none;">
 
+        <!-- 左下のお手本（全体像）サムネイル表示領域 -->
+        <div id="guide-thumbnail-container" style="display: none;">
+          <img id="guide-thumbnail" src="" alt="全体像">
+          <span class="guide-thumbnail-label">全体像</span>
+        </div>
+
         <!-- 黄色いターゲット枠 (コンテナNo.撮影時のみ表示・点滅) -->
         <div id="capture-target-box" class="target-box-blink" style="display: none;">
           <span class="target-label">ここにコンテナNo.を合わせる</span>
-        </div>
-
-        <!-- 画面左下に表示されるお手本サムネイル画像 -->
-        <div id="sample-thumbnail-container" class="sample-thumbnail-container" style="display: none;">
-          <span class="thumbnail-label">お手本</span>
-          <img id="sample-thumbnail" src="" alt="お手本サムネイル">
         </div>
 
         <!-- ローディングスピナー -->
@@ -1334,15 +1236,6 @@
       </div>
     </div>
 
-    <!-- お手本拡大ポップアップモーダル -->
-    <div id="sample-popup-modal" class="sample-popup-modal">
-      <div class="sample-popup-content">
-        <div id="sample-popup-close-btn" class="sample-popup-close-btn">&times;</div>
-        <h3 id="sample-popup-title" class="sample-popup-title">お手本画像</h3>
-        <img id="sample-popup-image" class="sample-popup-image" src="" alt="お手本拡大画像">
-      </div>
-    </div>
-
   </div>
 
   <!-- JavaScript (app.js.htmlの内容をインライン化 & fetchAPIへ書き換え) -->
@@ -1408,24 +1301,8 @@
       checklistData: null      // 清掃チェックリストの一時保存用
     };
 
-    // 各撮影キー（ShotKey）に対応する新たに作成したガイド画像（位置合わせ用）の相対パス定義
+    // 各撮影キー（ShotKey）に対応するガイド画像（PNGファイル）の相対パス定義 (左下サムネイル用)
     const overlayImageMap = {
-      'CONTAINER_NO': 'container_images/guide_10_container_no.png',
-      'BEFORE_FULL': 'container_images/guide_11_before_full.png',
-      'BACK_WALL': 'container_images/guide_01_back_wall.png',
-      'LEFT_BACK': 'container_images/guide_02_left_back.png',
-      'RIGHT_BACK': 'container_images/guide_03_right_back.png',
-      'CEILING_BACK': 'container_images/guide_04_ceiling_back.png',
-      'FLOOR_BACK': 'container_images/guide_05_floor_back.png',
-      'LEFT_FRONT': 'container_images/guide_06_left_front.png',
-      'RIGHT_FRONT': 'container_images/guide_07_right_front.png',
-      'CEILING_FRONT': 'container_images/guide_08_ceiling_front.png',
-      'FLOOR_FRONT': 'container_images/guide_09_floor_front.png',
-      'AFTER_FULL': 'container_images/guide_12_after_full.png'
-    };
-
-    // 各撮影キー（ShotKey）に対応するお手本画像（実物写真）の相対パス定義
-    const sampleImageMap = {
       'CONTAINER_NO': 'container_images/10_container_no.png',
       'BEFORE_FULL': 'container_images/11_before_full.png',
       'BACK_WALL': 'container_images/01_back_wall.png',
@@ -1438,6 +1315,22 @@
       'CEILING_FRONT': 'container_images/08_ceiling_front.png',
       'FLOOR_FRONT': 'container_images/09_floor_front.png',
       'AFTER_FULL': 'container_images/12_after_full.png'
+    };
+
+    // 全画面透過オーバーレイ画像 (新画像: container_overlays/X.png) の相対パス定義
+    const fullOverlayMap = {
+      'CONTAINER_NO': 'container_overlays/10.png',
+      'BEFORE_FULL': 'container_overlays/11.png',
+      'BACK_WALL': 'container_overlays/1.png',
+      'LEFT_BACK': 'container_overlays/2.png',
+      'RIGHT_BACK': 'container_overlays/3.png',
+      'CEILING_BACK': 'container_overlays/4.png',
+      'FLOOR_BACK': 'container_overlays/5.png',
+      'LEFT_FRONT': 'container_overlays/6.png',
+      'RIGHT_FRONT': 'container_overlays/7.png',
+      'CEILING_FRONT': 'container_overlays/8.png',
+      'FLOOR_FRONT': 'container_overlays/9.png',
+      'AFTER_FULL': 'container_overlays/12.png'
     };
 
     // オフラインフォールバック用のデフォルト撮影リスト定義 (新しい順序・名称に準拠)
@@ -1495,14 +1388,6 @@
       loadingMessage: document.getElementById('loading-message'),
       summaryJobId: document.getElementById('summary-job-id'),
       summaryPhotoCount: document.getElementById('summary-photo-count'),
-
-      // お手本サムネイルと拡大ポップアップ
-      sampleThumbnailContainer: document.getElementById('sample-thumbnail-container'),
-      sampleThumbnail: document.getElementById('sample-thumbnail'),
-      samplePopupModal: document.getElementById('sample-popup-modal'),
-      samplePopupCloseBtn: document.getElementById('sample-popup-close-btn'),
-      samplePopupTitle: document.getElementById('sample-popup-title'),
-      samplePopupImage: document.getElementById('sample-popup-image'),
 
       // アップロード画面用表示領域
       uploadProgressBar: document.getElementById('upload-progress-bar'),
@@ -1654,25 +1539,6 @@
 
       elements.chkItems.forEach(chk => {
         chk.addEventListener('change', checkChecklistValidation);
-      });
-
-      // お手本サムネイルタップ時に拡大ポップアップを表示するイベント
-      elements.sampleThumbnailContainer.addEventListener('click', () => {
-        const currentStep = state.shotsList[state.currentStepIndex];
-        if (currentStep) {
-          const samplePath = sampleImageMap[currentStep.ShotKey];
-          if (samplePath) {
-            elements.samplePopupImage.src = samplePath;
-            elements.samplePopupTitle.textContent = `${currentStep.ShotName} (お手本)`;
-            elements.samplePopupModal.classList.add('active');
-          }
-        }
-      });
-
-      // ポップアップを閉じるイベント (閉じるボタンまたは背景タップで閉じる)
-      elements.samplePopupModal.addEventListener('click', () => {
-        elements.samplePopupModal.classList.remove('active');
-        elements.samplePopupImage.src = '';
       });
     }
 
@@ -1843,36 +1709,31 @@
     }
 
     /**
-     * ガイドの表示切替処理 (全画面にアライメントガイド表示 ＆ 左下にお手本写真表示 ＆ 必要ステップで黄色枠を点滅表示)
+     * ガイドの表示切替処理 (全画面に新透過オーバーレイ表示 ＆ 左下に全体像サムネイル表示 ＆ 必要ステップで黄色枠を点滅表示)
      */
     function updateGuideDisplay() {
       if (state.shotsList[state.currentStepIndex]) {
         const currentStep = state.shotsList[state.currentStepIndex];
-        
-        // 1. 全画面ガイド画像（アライメント用）の表示制御
-        const guidePath = overlayImageMap[currentStep.ShotKey];
-        if (guidePath) {
-          // ガイド画像がない場合にエラー表示が出ないよう、onload/onerror でハンドリング
-          elements.cameraGuide.onerror = function() {
-            elements.cameraGuide.style.display = 'none';
-          };
-          elements.cameraGuide.onload = function() {
-            elements.cameraGuide.style.display = 'block';
-          };
-          elements.cameraGuide.src = guidePath;
-        } else {
+        const overlayPath = fullOverlayMap[currentStep.ShotKey];
+        const thumbnailPath = overlayImageMap[currentStep.ShotKey];
+
+        // 1. 全画面透過オーバーレイの表示制御 (新画像: container_overlays/X.png)
+        if (overlayPath && elements.cameraGuide) {
+          elements.cameraGuide.src = overlayPath;
+          elements.cameraGuide.style.display = 'block';
+        } else if (elements.cameraGuide) {
           elements.cameraGuide.src = '';
           elements.cameraGuide.style.display = 'none';
         }
 
-        // 2. 左下のお手本写真（サムネイル）の表示制御
-        const samplePath = sampleImageMap[currentStep.ShotKey];
-        if (samplePath) {
-          elements.sampleThumbnail.src = samplePath;
-          elements.sampleThumbnailContainer.style.display = 'block';
-        } else {
-          elements.sampleThumbnail.src = '';
-          elements.sampleThumbnailContainer.style.display = 'none';
+        // 2. 左下サムネイル (全体像) の表示制御 (旧実物写真: container_images/XX_name.png)
+        const thumbnailImg = document.getElementById('guide-thumbnail');
+        const thumbnailContainer = document.getElementById('guide-thumbnail-container');
+        if (thumbnailPath && thumbnailImg && thumbnailContainer) {
+          thumbnailImg.src = thumbnailPath;
+          thumbnailContainer.style.display = 'block';
+        } else if (thumbnailContainer) {
+          thumbnailContainer.style.display = 'none';
         }
 
         // 3. 黄色い点滅枠 (コンテナNo. = CONTAINER_NO のときのみ表示)
@@ -1883,7 +1744,8 @@
         }
       } else {
         if (elements.cameraGuide) elements.cameraGuide.style.display = 'none';
-        if (elements.sampleThumbnailContainer) elements.sampleThumbnailContainer.style.display = 'none';
+        const thumbnailContainer = document.getElementById('guide-thumbnail-container');
+        if (thumbnailContainer) thumbnailContainer.style.display = 'none';
         elements.captureTargetBox.style.display = 'none';
       }
     }
@@ -1970,9 +1832,8 @@
       elements.photoPreview.style.display = 'block';
       video.style.display = 'none';
       
-      // 撮影後のプレビューでは全画面ガイド画像と左下のお手本サムネイルを非表示にする
+      // 撮影後のプレビューでは全画面ガイド画像を非表示にする
       elements.cameraGuide.style.display = 'none';
-      elements.sampleThumbnailContainer.style.display = 'none';
 
       elements.btnCapture.style.display = 'none';
       elements.btnRetake.style.display = 'inline-flex';
@@ -2025,9 +1886,6 @@
       elements.btnRetake.style.display = 'none';
       elements.btnNextShot.style.display = 'none';
       elements.btnNextShot.disabled = true;
-
-      // 撮り直し時にはガイド表示を再開
-      updateGuideDisplay();
 
       startCamera();
     }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'container-cleanshot-v13';
+const CACHE_NAME = 'container-cleanshot-v14';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -15,7 +15,19 @@ const ASSETS_TO_CACHE = [
   './container_images/09_floor_front.png',
   './container_images/10_container_no.png',
   './container_images/11_before_full.png',
-  './container_images/12_after_full.png'
+  './container_images/12_after_full.png',
+  './container_overlays/1.png',
+  './container_overlays/2.png',
+  './container_overlays/3.png',
+  './container_overlays/4.png',
+  './container_overlays/5.png',
+  './container_overlays/6.png',
+  './container_overlays/7.png',
+  './container_overlays/8.png',
+  './container_overlays/9.png',
+  './container_overlays/10.png',
+  './container_overlays/11.png',
+  './container_overlays/12.png'
 ];
 
 // インストール時にアセットをキャッシュ
