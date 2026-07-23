@@ -301,40 +301,65 @@
       border-radius: 4px;
     }
 
-    /* 左下お手本 (全体像) サムネイル表示エリア */
-    #guide-thumbnail-container {
-      position: absolute;
-      left: 16px;
-      bottom: 90px;
-      width: 105px;
-      aspect-ratio: 3 / 4;
-      z-index: 5;
-      border-radius: 8px;
-      overflow: hidden;
-      outline: 1px solid white;
-      outline-offset: -1px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-      background-color: #000;
-    }
-
-    #guide-thumbnail {
+    /* カスタムモーダルダイアログ (追加撮影確認用) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: modal-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .guide-thumbnail-label {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(9, 13, 22, 0.75);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+    @keyframes modal-fade-in {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-card {
+      background: #111726;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .modal-body {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      padding: 14px 10px;
+      font-size: 1.1rem;
     }
 
     /* Buttons and Controls */
@@ -1085,12 +1110,6 @@
         <!-- 画面全体にオーバーレイ表示されるお手本ガイド画像 (半透明) -->
         <img id="camera-guide" class="camera-guide" src="" alt="お手本ガイド" style="display: none;">
 
-        <!-- 左下のお手本（全体像）サムネイル表示領域 -->
-        <div id="guide-thumbnail-container" style="display: none;">
-          <img id="guide-thumbnail" src="" alt="全体像">
-          <span class="guide-thumbnail-label">全体像</span>
-        </div>
-
         <!-- 黄色いターゲット枠 (コンテナNo.撮影時のみ表示・点滅) -->
         <div id="capture-target-box" class="target-box-blink" style="display: none;">
           <span class="target-label">ここにコンテナNo.を合わせる</span>
@@ -1238,6 +1257,18 @@
 
   </div>
 
+  <!-- 追加撮影確認用カスタムモーダルダイアログ -->
+  <div id="extra-photo-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <h3 class="modal-title">まだ他に撮影する箇所がありますか？</h3>
+      <p class="modal-body">損傷や汚れなど、気になる部分があれば追加で撮影してください。</p>
+      <div class="modal-actions">
+        <button id="btn-modal-no" class="btn btn-secondary btn-large">撮影しない</button>
+        <button id="btn-modal-yes" class="btn btn-primary btn-large" style="background: var(--accent-gradient);">撮影する</button>
+      </div>
+    </div>
+  </div>
+
   <!-- JavaScript (app.js.htmlの内容をインライン化 & fetchAPIへ書き換え) -->
   <script>
     // ----------------------------------------------------
@@ -1382,12 +1413,16 @@
       cameraStream: document.getElementById('camera-stream'),
       photoPreview: document.getElementById('photo-preview'),
       cameraGuide: document.getElementById('camera-guide'),
-      guideThumbnailContainer: document.getElementById('guide-thumbnail-container'),
       captureTargetBox: document.getElementById('capture-target-box'),
       loadingOverlay: document.getElementById('loading-overlay'),
       loadingMessage: document.getElementById('loading-message'),
       summaryJobId: document.getElementById('summary-job-id'),
       summaryPhotoCount: document.getElementById('summary-photo-count'),
+
+      // カスタムモーダル要素
+      extraPhotoModal: document.getElementById('extra-photo-modal'),
+      btnModalNo: document.getElementById('btn-modal-no'),
+      btnModalYes: document.getElementById('btn-modal-yes'),
 
       // アップロード画面用表示領域
       uploadProgressBar: document.getElementById('upload-progress-bar'),
@@ -1532,6 +1567,10 @@
       elements.btnRetryUpload.addEventListener('click', handleRetryUpload);
       elements.btnFinish.addEventListener('click', handleFinish);
       elements.btnFinishEarly.addEventListener('click', handleFinishEarly);
+
+      // カスタムモーダルのボタンイベント
+      elements.btnModalNo.addEventListener('click', handleModalNo);
+      elements.btnModalYes.addEventListener('click', handleModalYes);
 
       // オフライン未送信データアップロード用のイベント
       elements.btnUploadUnsent.addEventListener('click', handleUploadUnsent);
@@ -1709,13 +1748,12 @@
     }
 
     /**
-     * ガイドの表示切替処理 (全画面に新透過オーバーレイ表示 ＆ 左下に全体像サムネイル表示 ＆ 必要ステップで黄色枠を点滅表示)
+     * ガイドの表示切替処理 (全画面に新透過オーバーレイ表示)
      */
     function updateGuideDisplay() {
       if (state.shotsList[state.currentStepIndex]) {
         const currentStep = state.shotsList[state.currentStepIndex];
         const overlayPath = fullOverlayMap[currentStep.ShotKey];
-        const thumbnailPath = overlayImageMap[currentStep.ShotKey];
 
         // 1. 全画面透過オーバーレイの表示制御 (新画像: container_overlays/X.png)
         if (overlayPath && elements.cameraGuide) {
@@ -1726,24 +1764,12 @@
           elements.cameraGuide.style.display = 'none';
         }
 
-        // 2. 左下サムネイル (全体像) の表示制御 (旧実物写真: container_images/XX_name.png)
-        const thumbnailImg = document.getElementById('guide-thumbnail');
-        const thumbnailContainer = document.getElementById('guide-thumbnail-container');
-        if (thumbnailPath && thumbnailImg && thumbnailContainer) {
-          thumbnailImg.src = thumbnailPath;
-          thumbnailContainer.style.display = 'block';
-        } else if (thumbnailContainer) {
-          thumbnailContainer.style.display = 'none';
-        }
-
-        // 3. 黄色い点滅枠 (ご要望により削除・非表示)
+        // 2. 黄色い点滅枠 (非表示)
         if (elements.captureTargetBox) {
           elements.captureTargetBox.style.display = 'none';
         }
       } else {
         if (elements.cameraGuide) elements.cameraGuide.style.display = 'none';
-        const thumbnailContainer = document.getElementById('guide-thumbnail-container');
-        if (thumbnailContainer) thumbnailContainer.style.display = 'none';
         if (elements.captureTargetBox) elements.captureTargetBox.style.display = 'none';
       }
     }
@@ -1859,6 +1885,16 @@
           base64Image: state.currentBase64Image
         };
         await localSavePhoto(dbKey, photoInfo);
+
+        // メタデータ (shotsList) も常に最新化してIndexedDBに更新保存
+        const metadataKey = `${state.jobId}_metadata`;
+        const metadata = {
+          jobId: state.jobId,
+          checklistData: state.checklistData,
+          shotsList: state.shotsList,
+          userAgent: navigator.userAgent
+        };
+        await localSavePhoto(metadataKey, metadata);
         
         toggleLoading(false);
         elements.btnRetake.disabled = false;
@@ -1901,7 +1937,6 @@
       if (confirmed) {
         stopCamera();
 
-        // 撮影完了した分（現在キャプチャ中ならそれを含める）だけで shotsList を制限
         let activeShotsCount = state.currentStepIndex;
         if (state.currentBase64Image) {
           activeShotsCount++;
@@ -1918,6 +1953,51 @@
     }
 
     /**
+     * 追加撮影確認カスタムモーダルの表示・選択処理
+     */
+    function showExtraPhotoModal() {
+      if (elements.extraPhotoModal) {
+        elements.extraPhotoModal.style.display = 'flex';
+      }
+    }
+
+    function handleModalNo() {
+      if (elements.extraPhotoModal) {
+        elements.extraPhotoModal.style.display = 'none';
+      }
+      startBulkUpload();
+    }
+
+    async function handleModalYes() {
+      if (elements.extraPhotoModal) {
+        elements.extraPhotoModal.style.display = 'none';
+      }
+
+      const extraCount = state.shotsList.filter(s => s.ShotKey.startsWith('EXTRA_')).length + 1;
+      const extraStep = {
+        ShotKey: `EXTRA_${extraCount}`,
+        ShotNo: `追加`,
+        ShotName: `追加撮影 ${extraCount}`,
+        Required: false,
+        OverlayType: 'NONE'
+      };
+      state.shotsList.push(extraStep);
+
+      // メタデータ更新保存
+      const metadataKey = `${state.jobId}_metadata`;
+      const metadata = {
+        jobId: state.jobId,
+        checklistData: state.checklistData,
+        shotsList: state.shotsList,
+        userAgent: navigator.userAgent
+      };
+      await localSavePhoto(metadataKey, metadata);
+
+      state.currentStepIndex = state.shotsList.length - 1;
+      loadCurrentStep();
+    }
+
+    /**
      * 次へボタンクリック時の処理
      */
     function handleNextShot() {
@@ -1928,24 +2008,33 @@
       if (currentStep.ShotKey === 'BEFORE_FULL') {
         resetChecklistForm();
         showScreen(elements.checklistScreen);
+      } else if (currentStep.ShotKey.startsWith('EXTRA_')) {
+        // 追加撮影モード（13枚目以降）はダイアログを出さず自動的に次の追加撮影項目を追加
+        const extraCount = state.shotsList.filter(s => s.ShotKey.startsWith('EXTRA_')).length + 1;
+        const extraStep = {
+          ShotKey: `EXTRA_${extraCount}`,
+          ShotNo: `追加`,
+          ShotName: `追加撮影 ${extraCount}`,
+          Required: false,
+          OverlayType: 'NONE'
+        };
+        state.shotsList.push(extraStep);
+
+        // メタデータ更新保存
+        const metadataKey = `${state.jobId}_metadata`;
+        const metadata = {
+          jobId: state.jobId,
+          checklistData: state.checklistData,
+          shotsList: state.shotsList,
+          userAgent: navigator.userAgent
+        };
+        localSavePhoto(metadataKey, metadata);
+
+        state.currentStepIndex = state.shotsList.length - 1;
+        loadCurrentStep();
       } else if (state.currentStepIndex === state.shotsList.length - 1) {
-        // すべての写真撮影と確認が完了。追加で撮影する箇所があるか確認
-        const confirmed = confirm("送信する前に他に撮影する箇所はありますか？\n\n（追加で別の角度等の写真を撮影する場合は「はい」を、完了して送信する場合は「いいえ」を押してください）");
-        if (confirmed) {
-          const extraCount = state.shotsList.filter(s => s.ShotKey.startsWith('EXTRA_')).length + 1;
-          const extraStep = {
-            ShotKey: `EXTRA_${extraCount}`,
-            ShotNo: `追加`,
-            ShotName: `追加撮影 ${extraCount}`,
-            Required: false,
-            OverlayType: 'NONE'
-          };
-          state.shotsList.push(extraStep);
-          state.currentStepIndex = state.shotsList.length - 1;
-          loadCurrentStep();
-        } else {
-          startBulkUpload();
-        }
+        // 規定ステップの最後（初回）のみカスタムモーダルで確認メッセージを表示
+        showExtraPhotoModal();
       } else {
         state.currentStepIndex++;
         loadCurrentStep();
@@ -2023,22 +2112,19 @@
         // すべてのメタデータキーを抽出
         const metadataKeys = keys.filter(k => k.endsWith("_metadata"));
         
-        // 現在のメモリ状態にある最新データがメタデータとしてまだ保存されていなければ追加する（フォールバック）
-        if (state.jobId) {
+        // 現在のメモリ状態にある最新データをメタデータとして常に更新保存
+        if (state.jobId && state.shotsList.length > 0) {
           const currentMetaKey = `${state.jobId}_metadata`;
-          if (!metadataKeys.includes(currentMetaKey) && state.shotsList.length > 0) {
-            const currentMetadata = {
-              jobId: state.jobId,
-              checklistData: state.checklistData,
-              shotsList: state.shotsList,
-              userAgent: navigator.userAgent
-            };
-            await localSavePhoto(currentMetaKey, currentMetadata);
-            // 処理対象に追加
-            photos[currentMetaKey] = currentMetadata;
-            if (!metadataKeys.includes(currentMetaKey)) {
-              metadataKeys.push(currentMetaKey);
-            }
+          const currentMetadata = {
+            jobId: state.jobId,
+            checklistData: state.checklistData,
+            shotsList: state.shotsList,
+            userAgent: navigator.userAgent
+          };
+          await localSavePhoto(currentMetaKey, currentMetadata);
+          photos[currentMetaKey] = currentMetadata;
+          if (!metadataKeys.includes(currentMetaKey)) {
+            metadataKeys.push(currentMetaKey);
           }
         }
         
@@ -2078,23 +2164,29 @@
             await localSavePhoto(metaKey, metadata);
           }
 
-          // 2. このジョブに紐づく写真を順番に送信
+          // 2. このジョブに紐づくすべての写真（追加撮影含む）を順次送信
           const jobShots = metadata.shotsList || [];
-          for (const shot of jobShots) {
-            const photoKey = `${jobId}_photo_${shot.ShotKey}`;
-            const photoData = await localGetPhoto(photoKey);
+          const thisJobPhotoKeys = Object.keys(photos).filter(k => k.startsWith(`${jobId}_photo_`));
+
+          for (const photoKey of thisJobPhotoKeys) {
+            const photoData = photos[photoKey];
 
             if (photoData) {
-              elements.uploadStatusText.textContent = `写真を送信しています: ${shot.ShotName}`;
+              const shotKey = photoData.shotKey || photoKey.replace(`${jobId}_photo_`, '');
+              const shotObj = jobShots.find(s => s.ShotKey === shotKey);
+              const shotName = shotObj ? shotObj.ShotName : `写真 (${shotKey})`;
+
+              elements.uploadStatusText.textContent = `写真を送信しています: ${shotName}`;
               
               await callGasApi("savePhoto", {
                 jobId: jobId,
-                shotKey: shot.ShotKey,
+                shotKey: shotKey,
                 base64Image: photoData.base64Image
               });
 
               // 送信完了したらIndexedDBから該当写真を削除
               await localDeletePhoto(photoKey);
+              delete photos[photoKey];
               successCount++;
               updateUploadProgress(successCount, totalPhotos);
             }
